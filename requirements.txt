@@ -1,0 +1,2 @@
+# IANA timezone database for Windows; Linux can use its system zoneinfo.
+tzdata==2026.2

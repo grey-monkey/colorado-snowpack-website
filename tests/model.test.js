@@ -1,0 +1,13 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {condition,ratio,freshness,calendarDate,weeklyChange,validateSnapshot,yearSeries} from '../site/model.js';
+import {readFileSync} from 'node:fs';
+test('off-season and near-zero reference never produce a ratio',()=>{assert.equal(ratio(.044,0),null);assert.equal(condition(.044,0).kind,'low-reference');assert.equal(ratio(1,.099),null);});
+test('measured zero and missing are distinct, including winter',()=>{assert.equal(condition(0,10).headline,'0% of the same-date median.');assert.equal(condition(null,10).kind,'missing');assert.equal(ratio(0,10),0);assert.equal(ratio(null,10),null);assert.equal(condition(4,null).kind,'reference-missing');});
+test('winter uses a same-date reference ratio',()=>assert.equal(condition(8,10).headline,'80% of the same-date median.'));
+test('frozen data never advertises freshness',()=>{const status=freshness({status:'frozen',observation_date:'2026-09-21'},new Date('2026-10-01T12:00:00Z'));assert.equal(status.stale,true);assert.match(status.label,/Frozen/);assert.equal(status.age,10);});
+test('automated snapshots can become stale',()=>assert.match(freshness({status:'accepted',observation_date:'2026-09-21'},new Date('2026-09-25')).label,/overdue/));
+test('freshness uses Denver calendar days rather than UTC rollover',()=>assert.equal(freshness({status:'accepted',observation_date:'2026-09-21'},new Date('2026-09-24T01:00:00Z')).stale,false));
+test('calendar alignment handles leap dates and water-year boundaries',()=>{assert.equal(calendarDate(2025,'02-29'),null);assert.equal(calendarDate(2024,'02-29'),'2024-02-29');assert.equal(calendarDate(2026,'10-01'),'2025-10-01');assert.equal(calendarDate(2026,'09-30'),'2026-09-30');});
+test('weekly interval crosses a water-year boundary without substituting dates',()=>{const r={dates:['09-28','10-05'],years:{2025:[2,null],2026:[null,3]}};assert.deepEqual(weeklyChange(r,'2025-10-05'),{start:'2025-09-28',end:'2025-10-05',value:1});r.years[2025][0]=null;assert.equal(weeklyChange(r,'2025-10-05').value,null);});
+test('built snapshot passes validation and preserves source values',()=>{const s=validateSnapshot(JSON.parse(readFileSync(new URL('../dist/data/snapshot.json',import.meta.url))));const r=s.regions[0],i=r.dates.indexOf('09-21');assert.equal(r.years['2026'][i],.0443478261);assert.equal(r.median[i],0);assert.equal(yearSeries(r,2025).find(d=>d.md==='02-29').date,null);r.years['2026'][i]=Infinity;assert.throws(()=>validateSnapshot(s));});

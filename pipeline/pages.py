@@ -1,0 +1,59 @@
+"""Small, crawlable information pages sharing the dashboard identity."""
+from html import escape
+
+PAGES = {
+'methods.html': ('Data & methods', '''
+<p class="eyebrow">THE MEASUREMENTS BEHIND THE PICTURE</p><h1>Understand the snowpack.</h1>
+<p class="notice"><strong>Frozen research snapshot · September 21, 2026.</strong> This local preview does not retrieve new measurements automatically.</p>
+<h2 id="meaning">Water held in snow.</h2><p>Snow water equivalent (SWE) is the depth of water contained in snow, measured here in inches. It is not snow depth, new snowfall, or a forecast.</p>
+<p>The dashboard displays the <strong>published NRCS station-based SWE series</strong> for the State of Colorado and Colorado Headwaters. These describe conditions at monitoring sites. They are not an estimate of every unit of water stored across the state or basin.</p>
+<h2>Two regions, clearly defined.</h2><p>The statewide product includes representative monitoring sites outside Colorado. Colorado Headwaters is the Colorado Snow Survey’s custom major basin; similarly named watersheds in other products may differ. This preview offers the two verified products as a selectable list. Other basins and a boundary map are not included yet.</p>
+<p>The official 2026 chart legends list 115 sites for the statewide series and 31 for Colorado Headwaters. Those are series labels, not a count of sites reporting on every day. Historical populations vary, and the export does not provide daily station coverage or weights. We therefore avoid claims of fixed coverage, total regional water volume, or sensor-level verification.</p>
+<p>Sources: <a href="https://www.wcc.nrcs.usda.gov/ftpref/support/states/CO/products/faq/">Colorado Snow Survey FAQ</a> and <a href="https://www.nrcs.usda.gov/programs-initiatives/sswsf-snow-survey-and-water-supply-forecasting-program/snow-and-water-products">NRCS products guide</a>. The guide cautions that basin definitions can differ between products.</p>
+<h2>A fair seasonal comparison.</h2><p>The reference is NRCS’s published <strong>1991–2020 median</strong> series for the same month and day. We retain that series directly; we do not average basin percentages or substitute the period-of-record median. A median is a middle value, not a mean. <a href="https://www.nrcs.usda.gov/resources/data-and-reports/climatic-and-hydrologic-normals">About NRCS normals</a>.</p>
+<p>Where the reference is at least 0.1 inch, percent of median is the published SWE divided by the published reference, multiplied by 100. Below that threshold, small differences can produce unstable percentages, so we do not show a ratio. This threshold is our display rule, not an NRCS standard. A zero median does not imply no snow is present.</p>
+<p>A water year begins October 1 and ends September 30. Water year 2026 is October 1, 2025 through September 30, 2026. Curves align by month and day. February 29 has no observation in a non-leap year; lines break there rather than shifting dates. Missing observations remain gaps. Measured zero remains zero.</p>
+<p>The weekly note compares the snapshot date with exactly seven calendar days earlier. It describes the difference between published series values, not fresh snowfall. Changing coverage can affect small differences. Snow-water loss alone does not establish worsening conditions, runoff, or water-supply consequences.</p>
+<h2>Sources and verification.</h2><p>We compared 30,378 annual/reference value positions in the two NRCS JSON exports with their corresponding official chart traces. This checks product integration, not independent sensor accuracy. All measurements remain provisional and may be revised upstream. The frozen preview retains the original values; it is not silently refreshed.</p>
+<ul><li><a href="https://nwcc-apps.sc.egov.usda.gov/awdb/basin-plots/POR/WTEQ/assocHUCco3/state_of_colorado.html">Official statewide chart</a> · water years 1987–2026</li><li><a href="https://nwcc-apps.sc.egov.usda.gov/awdb/basin-plots/POR/WTEQ/assocHUCco_8/colorado_headwaters.html">Official Colorado Headwaters chart</a> · water years 1986–2026</li></ul>
+<p>The interactive chart offers water years 2024–2026, each with the preceding season. Full source history is in the downloads; the presence of a year does not guarantee complete coverage. Readings are rounded to hundredths for display. A positive value below 0.005 is shown as “&lt;0.005,” not zero. Downloads preserve source precision.</p>
+<h2 id="downloads">Open data, without an account.</h2><p><a href="data/series.csv" download>Download CSV</a> · <a href="data/series.json" download>Download JSON</a> · <a href="data/metadata.json">Metadata & provenance</a></p>
+<p>Each observation includes a region identifier, calendar observation date, water year, SWE and reference in inches, percent of median when meaningful, reference period/statistic, and quality flags. Empty CSV fields and JSON nulls mean missing or unavailable, not zero. Quality flags identify provisional data, unverified daily coverage, missing values, and a near-zero reference. Observation dates differ from the UTC verification timestamp in metadata.</p>
+<p>Exports retain schema <code>0.1.0</code> and method <code>nrcs-published-por-v1</code>. The compact dashboard snapshot has its own schema <code>1.0.0</code>. This is a frozen local preview; production revisions will need dated correction records.</p>
+<pre><code>import json
+from urllib.request import urlopen
+data = json.load(urlopen("http://127.0.0.1:8765/data/series.json"))
+rows = data["observations"]
+state = [r for r in rows if r["region_id"] == "co-state"]</code></pre>
+<p>Attribute the underlying measurements to USDA NRCS and include the source product, observation date, and reference period when reusing them. These files are openly downloadable; no broader licensing claim is made here. For station-level research, use the upstream NRCS tools.</p>
+<h2 id="contact">An independent information project.</h2><p>ColoradoSnowpack.com is not a government service, a Colorado office, or a registered nonprofit. There are no ads, sponsors, paid memberships, or commercial promotions in this preview.</p><p>An owner-approved public contact route is still being prepared. It will be required before public launch. No personal mailing address is published.</p>'''),
+'weekly.html': ('Colorado Snowpack Weekly', '''
+<p class="eyebrow">THE WEEK IN SNOW</p><h1>About a minute.<br>A clearer picture.</h1><p>Colorado Snowpack Weekly will explain the week’s verified snowpack changes: one clear takeaway, a compact regional comparison, and a link to explore the season.</p>
+<p class="notice"><strong>In preparation.</strong> Subscriptions and sending are inactive. No email address is collected by this preview.</p>
+<!-- SIGNUP --><h2>Useful before you click.</h2><p>The email itself will tell you what changed over seven days, with dates, units, and source attribution. It will use the same accepted measurements as the dashboard, without unsupported forecasts, ski-condition claims, or water-supply promises.</p>
+<h2>Honest in every season.</h2><p>When there is little snow to report, expect a shorter edition. A zero historical median will never be turned into a misleading percentage.</p>
+<h2>Weekly archive</h2><p>No editions have been published. The first verified edition will appear here after the delivery and privacy checks are complete. There is no demonstration newsletter being presented as a real issue.</p>
+<p><a href="index.html">Explore the snowpack →</a></p>'''),
+'privacy.html': ('Privacy', '''
+<p class="eyebrow">A SMALL, OPEN RESOURCE</p><h1>Your visit stays simple.</h1><p>Last updated September 21, 2026. This notice describes the local dashboard preview, not a launched subscription service.</p>
+<h2>The dashboard and your choices.</h2><p>The snowpack dashboard does not use advertising pixels or visitor analytics. Fonts and interface files are served with the site. Your region and season selections appear in the page URL so a view can be bookmarked.</p>
+<h2>Newsletter signup.</h2><p>Public subscriptions remain closed during readiness testing. Where a signup form is enabled, Kit processes your email address, confirmation and subscription status. We ask only for your email and require confirmation before sending the weekly newsletter. Kit supplies the form and may use cookies, connection information and Google reCAPTCHA to prevent abuse. Those services load only on pages with an enabled signup form.</p>
+<p>Kit stores the subscriber record; this website has no separate subscriber database. An unsubscribe link is included in every email. Kit retains the cancelled record to avoid sending again. Kit can also record email opens and link clicks; these can be affected by mail-client privacy features and are not a reliable measure of individual reading. <a href="https://kit.com/privacy">Kit privacy policy</a> · <a href="https://policies.google.com/privacy">Google privacy policy</a> · <a href="https://policies.google.com/terms">Google terms</a>.</p>
+<h2>Public snow data and hosting.</h2><p>The dashboard loads validated copies of published NRCS data rather than querying NRCS on each visit. GitHub Pages is the planned host and may process technical request information to operate the site. External links use the destination service’s privacy practices.</p>
+<h2>Your information.</h2><p>Subscriber addresses and account credentials are excluded from public downloads and source. Email footers use Kit’s supplied compliance address; Grey’s personal mailing address is not published. The reply address in newsletter emails provides a way to contact the owner about your subscription or request an export or removal.</p>
+<p>A public website contact route is still required before launch. The current private tests do not activate public subscriptions.</p>''')
+}
+
+
+def render_pages(output):
+    index=(output/'index.html').read_text(encoding='utf-8')
+    header=index[index.index('<body>'):index.index('<main id="main"')]
+    footer=index[index.index('<footer>'):]
+    for filename,(title,body) in PAGES.items():
+        nav=header.replace(' class="active"','').replace(' aria-current="page"','')
+        nav=nav.replace(f'href="{filename}">',f'href="{filename}" aria-current="page" class="active">')
+        head=f'<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{escape(title)} — Colorado Snowpack</title><meta name="description" content="{escape(title)} for the independent Colorado Snowpack resource."><link rel="canonical" href="https://coloradosnowpack.com/{filename}"><link rel="icon" href="favicon.svg"><link rel="stylesheet" href="styles.css"></head>'
+        (output/filename).write_text(head+nav+'<main id="main" tabindex="-1" class="document">'+body+'</main>'+footer,encoding='utf-8')
+    urls=['','methods.html','weekly.html','privacy.html']
+    (output/'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join(f'<url><loc>https://coloradosnowpack.com/{url}</loc></url>' for url in urls)+'</urlset>')
+    (output/'robots.txt').write_text('User-agent: *\nAllow: /\nSitemap: https://coloradosnowpack.com/sitemap.xml\n')
