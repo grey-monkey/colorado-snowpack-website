@@ -6,7 +6,7 @@ Status: LIVE. Public signup, twice-daily data retrieval, and Monday newsletter s
 
 ## Production verification
 
-- Final approved layout and latest requested branding are published: the full header name uses the footer’s bold type treatment; the rounded emblem depicts layered snow without a separate underline.
+- Final approved layout and latest requested branding are published: the header uses a compact two-line Colorado / Snowpack wordmark with the footer’s bold typeface, tuned spacing and alignment, and no terminal period. The rounded emblem depicts layered snow without a separate underline.
 - Apex and www use GitHub Pages’ four IPv4 addresses. All seven email DNS record groups remain present. Nameservers and verified hello forwarding were not changed.
 - HTTPS certificate is approved for apex and www; HTTPS enforcement is enabled. Fresh network requests verify HTTP-to-HTTPS and www-to-apex redirects.
 - Seventeen live pages/assets/downloads passed HTTPS and protected-value checks. Signup markup points to the encrypted Cloudflare backend. No preview/noindex notices remain on the production pages.
