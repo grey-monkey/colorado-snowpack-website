@@ -90,3 +90,6 @@ h2{font-weight:800;letter-spacing:-1.2px;line-height:1.2}.notice{border-top:0;fo
 
 /* Basin selection provides the link between geography and names; no numbered key. */
 .map-panel .basin-row{grid-template-columns:minmax(0,1fr) auto;gap:12px;padding-inline:10px}
+
+/* Water-year endpoints beneath the date slider. */
+.range-endpoints{display:flex;justify-content:space-between;gap:12px}
