@@ -23,8 +23,8 @@ function inspectDate(){
   const title=row.date?fmtDate(row.date):`February 29 · no calendar date in water year ${year}`;
   $('date-reading').replaceChildren();
   const strong=document.createElement('strong');strong.textContent=title;$('date-reading').append(strong);
-  for(const [label,value] of [[year,row.value],[year-1,prev.value],['Median',row.median]]){const div=document.createElement('div'),b=document.createElement('b'),span=document.createElement('span');b.textContent=value===null?'—':fmt(value)+' in';span.textContent=label+(value===null?' · not reported':'');div.append(b,span);$('date-reading').append(div);}
-  $('day').setAttribute('aria-valuetext',`${title}; ${year}: ${fmt(row.value)} inches; ${year-1}: ${fmt(prev.value)} inches; median: ${fmt(row.median)} inches`);
+  for(const [label,value] of [[year,row.value],[year-1,prev.value],['Historic Median',row.median]]){const div=document.createElement('div'),b=document.createElement('b'),span=document.createElement('span');b.textContent=value===null?'—':fmt(value)+' in';span.textContent=label+(value===null?' · not reported':'');div.append(b,span);$('date-reading').append(div);}
+  $('day').setAttribute('aria-valuetext',`${title}; ${year}: ${fmt(row.value)} inches; ${year-1}: ${fmt(prev.value)} inches; historic median: ${fmt(row.median)} inches`);
   renderChart();
 }
 function renderSeason(){
