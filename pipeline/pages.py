@@ -51,7 +51,7 @@ def render_pages(output):
     for filename,(title,body) in PAGES.items():
         nav=header.replace(' class="active"','').replace(' aria-current="page"','')
         nav=nav.replace(f'href="{filename}">',f'href="{filename}" aria-current="page" class="active">')
-        head=f'<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{escape(title)} — Colorado Snowpack</title><meta name="description" content="{escape(title)} for the independent Colorado Snowpack resource."><link rel="canonical" href="https://coloradosnowpack.com/{filename}"><link rel="icon" href="favicon.svg"><link rel="stylesheet" href="styles.css?v=final-polish-1"></head>'
+        head=f'<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{escape(title)} — Colorado Snowpack</title><meta name="description" content="{escape(title)} for the independent Colorado Snowpack resource."><link rel="canonical" href="https://coloradosnowpack.com/{filename}"><link rel="icon" href="favicon.svg"><link rel="stylesheet" href="styles.css?v=map-live-4"></head>'
         (output/filename).write_text(head+nav+'<main id="main" tabindex="-1" class="document">'+body+'</main>'+footer,encoding='utf-8')
     urls=['','methods.html','weekly.html','privacy.html']
     (output/'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join(f'<url><loc>https://coloradosnowpack.com/{url}</loc></url>' for url in urls)+'</urlset>')
