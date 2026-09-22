@@ -9,4 +9,11 @@ Manrope variable font, Latin subset: Google Fonts, SIL Open Font License.
 https://github.com/google/fonts/tree/main/ofl/manrope
 See OFL-Manrope.txt for license and copyright.
 
-Mountain emblem and abstract contour SVG: created for Colorado Snowpack.
+Mountain emblem: created for Colorado Snowpack.
+
+Contour background: USGS National Map, public-domain elevation geometry near Longs Peak.
+Source: https://cartowfs.nationalmap.gov/arcgis/rest/services/contours/MapServer/1
+100-foot source contours, displayed every 200 feet; NAD83 / UTM zone 13N.
+Crop: 447500,4456500 to 449740,4458100 meters. North up.
+Clipped and uniformly scaled; no invented curves or smoothing.
+Source geometry and provenance: evidence/terrain/longs-peak-contours.json.

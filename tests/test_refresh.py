@@ -58,7 +58,7 @@ class AcceptedFlow(unittest.TestCase):
         self.assertEqual(refresh(self.store,bad.__getitem__,NOW)['status'],'validation_failed')
         self.assertEqual(self.read(),initial)
         recovered=refresh(self.store,altered(self.source).__getitem__,NOW.replace(day=22))
-        self.assertEqual(recovered['status'],'accepted');self.assertEqual(recovered['changed_observations'],2)
+        self.assertEqual(recovered['status'],'accepted');self.assertEqual(recovered['changed_observations'],len(PRODUCTS))
         self.assertEqual(self.read()['observation_date'],'2026-09-22')
         db=connect(self.store)
         try:self.assertEqual(read_release(db,1),initial)
@@ -79,7 +79,7 @@ class AcceptedFlow(unittest.TestCase):
     def test_interior_missing_revision_preserved_and_recap_withheld(self):
         refresh(self.store,self.source.__getitem__,NOW)
         result=refresh(self.store,altered(self.source,md='09-14',value=None).__getitem__,NOW)
-        self.assertEqual(result['changed_observations'],2)
+        self.assertEqual(result['changed_observations'],len(PRODUCTS))
         recap=facts(self.read(),today=date(2026,9,21))
         self.assertFalse(recap['delivery_eligible']);self.assertIsNone(recap['regions'][0]['net_swe_change_inches'])
 
@@ -117,3 +117,31 @@ class AcceptedFlow(unittest.TestCase):
         output=Path(self.temp.name)/'public';output.mkdir();(output/'index.html').write_text('last good')
         with self.assertRaises(ValueError):publish(self.store,output)
         self.assertEqual((output/'index.html').read_text(),'last good')
+
+    def test_expansion_preserves_existing_history_and_covers_official_basins(self):
+        from unittest.mock import patch
+        from pipeline.proof import REGION_GROUPS
+        from pipeline.publish import snapshot_for
+        original={k:PRODUCTS[k] for k in ('state','basin')}
+        with patch.dict(PRODUCTS,original,clear=True):
+            self.assertEqual(refresh(self.store,self.source.__getitem__,NOW)['status'],'accepted')
+        previous=self.read()
+        self.assertEqual(refresh(self.store,self.source.__getitem__,NOW)['status'],'accepted')
+        expanded=self.read()
+        self.assertEqual(len(expanded['metadata']['products']),9)
+        self.assertEqual(set(REGION_GROUPS),{p['region_id'] for p in expanded['metadata']['products']})
+        old_ids={p['region_id'] for p in previous['metadata']['products']}
+        self.assertEqual(previous['observations'],[r for r in expanded['observations'] if r['region_id'] in old_ids])
+        snapshot=snapshot_for(expanded)
+        self.assertEqual(len(snapshot['regions']),9)
+        for region in snapshot['regions']:
+            self.assertEqual(region['group'],REGION_GROUPS[region['id']])
+            proof=next(p for p in expanded['metadata']['products'] if p['region_id']==region['id'])
+            i=region['dates'].index('09-21')
+            self.assertEqual(region['years']['2026'][i],proof['latest']['swe_inches'])
+            self.assertEqual(region['median'][i],proof['latest']['median_inches'])
+        from pipeline.newsletter import edition
+        email=edition(expanded,today=date(2026,9,21))
+        for region in snapshot['regions']:
+            self.assertIn('Colorado statewide' if region['id']=='co-state' else region['name'],email['text'])
+        self.assertLess(len(email['content']),30000)

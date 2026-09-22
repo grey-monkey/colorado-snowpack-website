@@ -15,9 +15,25 @@ from pathlib import Path
 
 BASE = 'https://nwcc-apps.sc.egov.usda.gov/awdb/basin-plots/POR/WTEQ/'
 REFERENCE = "Median ('91-'20)"
+# Colorado Snow Survey's eight custom major basins, not arbitrary HUC slices.
+# Preserve the original keys and IDs so existing links and accepted history remain valid.
 PRODUCTS = {
     'state': ('co-state', 'State of Colorado', 'assocHUCco3/state_of_colorado'),
     'basin': ('co-colorado-headwaters', 'Colorado Headwaters', 'assocHUCco_8/colorado_headwaters'),
+    'gunnison': ('co-gunnison', 'Gunnison', 'assocHUCco_8/gunnison'),
+    'southwest': ('co-san-miguel-dolores-animas-san-juan', 'San Miguel–Dolores–Animas–San Juan', 'assocHUCco_8/san_miguel-dolores-animas-san_juan'),
+    'yampa': ('co-yampa-white-little-snake', 'Yampa–White–Little Snake', 'assocHUCco_8/yampa-white-little_snake'),
+    'north-platte': ('co-laramie-north-platte', 'Laramie & North Platte', 'assocHUCco_8/laramie_and_north_platte'),
+    'south-platte': ('co-south-platte', 'South Platte', 'assocHUCco_8/south_platte'),
+    'arkansas': ('co-arkansas', 'Arkansas', 'assocHUCco_8/arkansas'),
+    'rio-grande': ('co-upper-rio-grande', 'Upper Rio Grande', 'assocHUCco_8/upper_rio_grande'),
+}
+REGION_GROUPS = {
+    'co-state': 'Statewide',
+    **{PRODUCTS[k][0]: 'Colorado River drainage' for k in ('basin','gunnison','southwest','yampa')},
+    **{PRODUCTS[k][0]: 'Platte River drainage' for k in ('north-platte','south-platte')},
+    'co-arkansas': 'Arkansas River drainage',
+    'co-upper-rio-grande': 'Rio Grande drainage',
 }
 
 

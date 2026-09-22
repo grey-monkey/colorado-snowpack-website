@@ -5,7 +5,7 @@ import json
 import hashlib
 import shutil
 from pathlib import Path
-from .proof import PRODUCTS, REFERENCE, verify
+from .proof import PRODUCTS, REGION_GROUPS, REFERENCE, verify
 from .pages import render_pages
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -24,7 +24,7 @@ def build(output):
         observations.extend(normalized)
         years = list(map(int, proof['historical_water_years']))
         newest = max(years)
-        regions.append(dict(id=region_id, name=name, source=proof['source_chart'],
+        regions.append(dict(id=region_id, name=name, group=REGION_GROUPS[region_id], source=proof['source_chart'],
             coverage=[min(years), max(years)], station_labels=proof['chart_series_labels'],
             dates=[r['date'] for r in raw], median=[r[REFERENCE] for r in raw],
             years={str(y): [r[str(y)] for r in raw] for y in range(newest-3, newest+1)}))

@@ -7,7 +7,9 @@ from urllib.request import Request,urlopen
 from .refresh import connect,read_release,encoded
 from .weekly import facts
 
-NAMES={'co-state':'Colorado statewide','co-colorado-headwaters':'Colorado Headwaters'}
+from .proof import PRODUCTS
+
+NAMES={rid: ('Colorado statewide' if rid=='co-state' else name) for rid,name,_ in PRODUCTS.values()}
 
 def number(v):
     if v is None:return 'Unavailable'

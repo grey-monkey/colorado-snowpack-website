@@ -8,6 +8,7 @@ import tempfile
 from datetime import date,timedelta
 from pathlib import Path
 from .build import ROOT
+from .proof import REGION_GROUPS
 from .pages import render_pages
 from .refresh import connect,read_release,encoded
 from .weekly import facts
@@ -35,7 +36,7 @@ def snapshot_for(release):
                 row=next((rows[(p['region_id'],y,md)] for y in range(year-1,year-5,-1) if (p['region_id'],y,md) in rows),None)
             median.append(row['median_inches'] if row else None)
         years={str(y):[rows.get((p['region_id'],y,md),{}).get('swe_inches') for md in dates] for y in range(year-3,year+1)}
-        regions.append(dict(id=p['region_id'],name=p['region_name'],source=p['source_chart'],
+        regions.append(dict(id=p['region_id'],name=p['region_name'],group=REGION_GROUPS[p['region_id']],source=p['source_chart'],
             coverage=[int(p['historical_water_years'][0]),year],station_labels=p['chart_series_labels'],
             dates=dates,median=median,years=years))
     return dict(schema_version='1.0.0',status='accepted',release_id=release['id'],observation_date=release['observation_date'],

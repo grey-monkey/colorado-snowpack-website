@@ -58,7 +58,13 @@ async function load(){
     const response=await fetch(document.body.dataset.snapshot||'data/snapshot.json',{signal:AbortSignal.timeout(10000)});if(!response.ok)throw new Error('Snapshot unavailable');snapshot=validateSnapshot(await response.json());
     const params=new URLSearchParams(location.search);region=snapshot.regions.find(r=>r.id===params.get('region'))||snapshot.regions[0];
     const allYears=Object.keys(region.years).map(Number).sort((a,b)=>b-a);const years=allYears.filter(y=>allYears.includes(y-1));year=years.includes(Number(params.get('year')))?Number(params.get('year')):years[0];
-    $('region').replaceChildren(...snapshot.regions.map(r=>new Option(r.id==='co-state'?'Colorado statewide':r.name,r.id)));$('region').value=region.id;
+    const groups=new Map();
+    for(const r of snapshot.regions){
+      const label=r.group||(r.id==='co-state'?'Statewide':'River basins');
+      if(!groups.has(label)){const group=document.createElement('optgroup');group.label=label;groups.set(label,group);}
+      groups.get(label).append(new Option(r.id==='co-state'?'Colorado statewide':r.name,r.id));
+    }
+    $('region').replaceChildren(...groups.values());$('region').value=region.id;
     $('season').replaceChildren(...years.map(y=>new Option(y,y)));$('season').value=year;
     $('day').value=Math.max(0,region.dates.indexOf(snapshot.observation_date.slice(5,10)));
     const status=freshness(snapshot);$('snapshot-status').textContent=`${status.label} · Observed ${fmtDate(snapshot.observation_date)}${status.stale?' · '+status.age+' days old':''}`;

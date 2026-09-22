@@ -41,7 +41,7 @@ jobs:
       - name: Persist accepted history and attempt status
         working-directory: history
         run: |
-          test $(stat -c%s snowpack.sqlite) -lt 40000000
+          test $(stat -c%s snowpack.sqlite) -lt 80000000
           git config user.name 'snowpack automation'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -f snowpack.sqlite
@@ -52,7 +52,7 @@ jobs:
       - name: Enforce small publication
         run: |
           test -f source/dist/index.html
-          test $(du -sb source/dist | cut -f1) -lt 50000000
+          test $(du -sb source/dist | cut -f1) -lt 90000000
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b
       - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b
         with:
