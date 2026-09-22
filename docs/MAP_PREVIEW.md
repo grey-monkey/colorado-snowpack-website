@@ -1,10 +1,10 @@
-# Colorado Snowpack: map edition preview
+# Colorado Snowpack: map component
 
-Local branch: map-preview. Not pushed, deployed, or connected to newsletter sending. Production stays on b573c53.
+Owner approved publication after local preview review. The refined map follows the season chart; the shared chart slider controls both. Newsletter sending is unchanged.
 
 ## Design
 
-The map sits above the season chart. Select a basin on the map or in the readable companion list to update the existing region selector and chart. The chart slider, water-year selector and map date picker share one date. Region/year/date are preserved in preview URLs. The overview at the top of the page remains explicitly dated to the latest accepted observation; the map and chart explore the chosen date.
+The map sits below the season chart. Select a basin on the map or in the readable companion list to update the existing region selector and chart. The chart slider and water-year selector control the map date; there is no duplicate date picker. Region/year/date are preserved in shared URLs. The overview at the top of the page remains explicitly dated to the latest accepted observation; the map and chart explore the chosen date.
 
 Default color mode chooses percent of the same-date 1991–2020 median when any basin has a usable reference. When all basin references are missing or below 0.1 inch, it uses SWE in inches. Users can explicitly choose either measure. Fixed color bands avoid making small day-to-day differences look dramatic. Numeric labels accompany color, with a full readable list on phones. This is not a map of snow coverage, snow depth, total water storage or forecast conditions.
 
@@ -23,14 +23,16 @@ Reproduce geometry with `python ops/build_map_geometry.py`. No map API key, exte
 
 ## Newsletter draft
 
-Download map image produces a standalone 1200×1040 PNG with date, metric, numeric basin readings, fixed legend, source and limitations. It excludes interactive selection highlighting. Current and historical examples are saved for review. Every image is explicitly labeled LOCAL PREVIEW. Nothing has been attached to or sent through Kit, and no production newsletter template or schedule changed. Final newsletter integration remains a separate owner-reviewed step.
+Download map image produces a standalone 1200×1040 PNG with date, metric, numeric basin readings, fixed legend, source and limitations. It excludes interactive selection highlighting. Current and historical examples are saved for review. Exports include the selected date, measurements and source credits. Nothing has been attached to or sent through Kit, and no production newsletter template or schedule changed. Final newsletter integration remains a separate owner-reviewed step.
 
 ## Menu refinement
 
-Selected region uses bold text. The orange focus rectangle is removed from the region selector, with a subtle green inset underline retained for keyboard users. Normal capitalization preserves long-name readability. This change is also preview-only.
+Selected region uses bold text. The orange focus rectangle is removed from the region selector, with a subtle green inset underline retained for keyboard users. Normal capitalization preserves long-name readability. This change is included in the approved map release.
 
 ## Validation
 
 Official geometry reproduced exactly from archived sources. Tests cover nine-region identity, zero/missing/near-zero distinctions, non-leap dates, explicit and automatic color modes, selection synchronization, date/year synchronization, keyboard focus retention, 320/390/768/1440 layouts, PNG generation for summer and winter, and map-retrieval failure without losing the existing chart.
 
-The local preview has noindex/nofollow and no active signup configuration. Source evidence and data remain public weather/geographic information only.
+Production retains normal indexing and its existing public signup configuration. Source evidence and data remain public weather/geographic information only.
+
+Supporting controls, boundary notes and image download are collapsed under “Map details & image download.” The initial view retains the map, its numbers, date, legend and one short interpretation line. No scheduled image sending was added.

@@ -1,4 +1,4 @@
-import {initBasinMap} from './basin-map.js';
+import {initBasinMap} from './basin-map.js?v=map-live-1';
 import {calendarDate,condition,freshness,yearSeries,weeklyChange,validateSnapshot} from './model.js';
 const $=id=>document.getElementById(id);
 const fmtDate=s=>new Date(s+'T12:00:00Z').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric',timeZone:'UTC'});
@@ -75,7 +75,7 @@ async function load(){
       if(years.includes(requestedYear)&&region.dates.includes(md)&&calendarDate(requestedYear,md)===requestedDate&&requestedDate<=snapshot.observation_date){year=requestedYear;$('season').value=year;$('day').value=region.dates.indexOf(md);}
     }
     const status=freshness(snapshot);$('snapshot-status').textContent=`${status.label} · Observed ${fmtDate(snapshot.observation_date)}${status.stale?' · '+status.age+' days old':''}`;
-    $('dashboard').hidden=false;
+    $('dashboard').hidden=false;renderRegion();
     try{basinMap=await initBasinMap(snapshot,{
       onSelect:id=>{region=snapshot.regions.find(r=>r.id===id);$('region').value=id;renderRegion();syncURL();},
       onDate:date=>{year=Number(date.slice(0,4))+(Number(date.slice(5,7))>=10?1:0);$('season').value=year;$('day').value=region.dates.indexOf(date.slice(5));renderSeason();syncURL();}
