@@ -21,7 +21,7 @@ h2{font-weight:800;letter-spacing:-1.2px;line-height:1.2}.notice{border-top:0;fo
 @media(max-width:360px){.masthead,main,footer{padding-inline:16px}.intro h1{font-size:35px}.intro .eyebrow{font-size:8px}.landscape{height:90px}.region-controls{padding:10px 14px;display:flex}.region-controls label{margin:0}.reading,.overview-main{padding:20px}.season{padding:22px 12px 8px}.section-heading h2{font-size:23px}.legend{gap:8px;font-size:9px}.line{width:16px}.weekly-panel{padding:26px 20px}.weekly-panel h2{font-size:26px}.big-reading{font-size:62px}}
 @media print{.landscape,.reading:after{display:none}.reading{color:var(--ink);background:white}.reading .eyebrow,.reading .small,.reading>p:not(.eyebrow):not(.big-reading){color:var(--ink)}.season{border:0;padding:0}}
 
-/* Match the footer wordmark, retaining a real word space at every viewport. */
-.brand{gap:13px;align-items:center}.brand-name{display:block;font-size:24px;font-weight:800;letter-spacing:-.8px;word-spacing:.06em;line-height:1.2;font-kerning:normal;text-rendering:optimizeLegibility}.brand svg{width:48px;height:48px}.footer-brand{font-kerning:normal;text-rendering:optimizeLegibility;word-spacing:.06em}
-@media(max-width:760px){.brand-name{font-size:22px;letter-spacing:-.75px}.brand svg{width:44px;height:44px}.brand{gap:12px}}
-@media(max-width:360px){.brand-name{font-size:20px;letter-spacing:-.65px}.brand svg{width:40px;height:40px}.brand{gap:11px}}
+/* Tight two-line lockup, with a real space preserved for unstyled text. */
+.brand{gap:13px;align-items:center}.brand-name{display:flex;flex-direction:column;gap:0;font-size:25px;font-weight:800;letter-spacing:-1px;line-height:1;font-kerning:normal;text-rendering:optimizeLegibility}.brand-name>span{display:block}.brand svg{width:52px;height:52px}.footer-brand{font-kerning:normal;text-rendering:optimizeLegibility}
+@media(max-width:760px){.brand-name{font-size:23px;letter-spacing:-.9px;line-height:1}.brand svg{width:48px;height:48px}.brand{gap:12px}}
+@media(max-width:360px){.brand-name{font-size:22px;letter-spacing:-.85px}.brand svg{width:46px;height:46px}}
