@@ -110,10 +110,10 @@ def accepted_page(content,release,data_relative):
     content=content.replace('water years 1987–2026',f'water years 1987–{year}').replace('water years 1986–2026',f'water years 1986–{year}')
     content=content.replace('data/series.',data_relative+'/series.').replace('data/metadata.json',data_relative+'/metadata.json')
     content=content.replace('Frozen research snapshot · September 21, 2026.',f'Accepted observations · {release["observation_date"]}.')
-    content=content.replace('This local preview does not retrieve new measurements automatically.','This local preview uses validated retrieved data. No production refresh schedule is active.')
+    content=content.replace('This local preview does not retrieve new measurements automatically.','Measurements are checked twice daily. If an update fails validation, the site keeps the last verified readings.')
     content=content.replace('30,378 annual/reference value positions',f'{sum(p["matched_values"] for p in release["metadata"]["products"]):,} annual/reference value positions')
     content=content.replace('The frozen preview retains the original values; it is not silently refreshed.','Accepted revisions are retained in a versioned history; each download identifies its accepted release.')
-    content=content.replace('This is a frozen local preview; production revisions will need dated correction records.','This is a local accepted-data preview. Revision history is retained; a public correction browser is not included.')
+    content=content.replace('This is a frozen local preview; production revisions will need dated correction records.','Accepted revisions are retained in versioned history. Each download identifies its release.')
     content=content.replace('Exports retain schema <code>0.1.0</code> and method <code>nrcs-published-por-v1</code>.','Exports retain schema <code>0.1.0</code> and use method <code>accepted-v1</code>.')
     return content
 

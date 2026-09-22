@@ -15,7 +15,7 @@ def main():
         print(encoded({'edition':e['key'],'status':'generated_only'}));return
     base=os.environ['SIGNUP_SERVICE_URL'].rstrip('/')
     if not base.startswith('https://'):raise SystemExit('HTTPS backend required')
-    request=Request(base+'/internal/weekly',data=encoded(e).encode(),headers={'Authorization':'Bearer '+os.environ['AUTOMATION_SECRET'],'Content-Type':'application/json'})
+    request=Request(base+'/internal/weekly',data=encoded(e).encode(),headers={'Authorization':'Bearer '+os.environ['AUTOMATION_SECRET'],'Content-Type':'application/json','User-Agent':'ColoradoSnowpack/1.0 (+https://coloradosnowpack.com)' })
     try:
         with urlopen(request,timeout=35) as response:result=json.load(response)
     except (HTTPError,URLError,TimeoutError):raise SystemExit('Delivery not confirmed. Inspect the durable reservation and Kit; do not blindly resend.') from None

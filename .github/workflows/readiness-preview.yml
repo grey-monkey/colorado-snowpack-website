@@ -1,7 +1,5 @@
 name: Temporary readiness preview
 on:
-  push:
-    branches: [readiness-preview]
   workflow_dispatch:
 permissions:
   contents: read
