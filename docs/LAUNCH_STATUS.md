@@ -28,3 +28,7 @@ Signup/weekly backend: colorado-snowpack-signup-preview on Cloudflare (existing 
 Pause only the affected service: set SNOWPACK_ENABLED=false for retrieval; WEEKLY_ENABLED=false for the newsletter workflow and NEWSLETTER_MODE=off for its backend; SIGNUP_MODE=off for signup. Preserve the weather database and durable edition ledger. Do not change mail DNS when pausing a website service.
 
 The in-app browser still returned a cached parking route during verification, while authoritative DNS, Cloudflare, Google and Quad9 had the production addresses and fresh HTTPS requests served the final build. This is a propagation/cache limitation, not a failed production build.
+
+## Review handoff cleanup
+
+The final approved two-line wordmark uses tighter line spacing and no period. Historic Median appears in the date inspector and numerical table. The mountain caption contains only the title and NPS/D. Turk credit. Production deployment 35676975797 succeeded. Public signup, twice-daily refresh and Monday newsletter switches are enabled; both production workflows are active. The temporary GitHub Pages preview workflow was disabled and moved outside the active workflow directory so it cannot overwrite production. The working tree and source archive are current. DNS cache propagation remains the only temporary visibility caveat.
