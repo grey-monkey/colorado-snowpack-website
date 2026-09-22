@@ -13,3 +13,7 @@ private/
 *.sqlite-wal
 *.sqlite-shm
 preview-dist/
+worker-dist/
+node_modules/
+.wrangler/
+.dev.vars*

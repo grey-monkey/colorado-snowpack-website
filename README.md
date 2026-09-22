@@ -2,13 +2,11 @@
 
 Colorado's snowpack, made clear.
 
-The local dashboard now supports validated live retrieval, accepted history and
-last-good publication. No public deployment, signup or production schedules are
-active. The private owner-only Kit API delivery test passed: the owner confirmed the
-received footer contains only Kit�s address, and Kit independently confirmed the
-recipient�s unsubscribe.
-
-See [production-readiness status](docs/PRODUCTION_READINESS.md) for current evidence.
+The dashboard supports validated live retrieval, accepted history and last-good
+publication. A temporary GitHub Pages rehearsal is available with signup disabled;
+production DNS and recurring schedules remain inactive. Signup lifecycle verification
+is still in progress. See [current readiness](docs/FINAL_HOSTED_STATUS.md) and
+[prepared Squarespace DNS instructions](docs/LAUNCH_DNS.md).
 
 For accepted data (Python 3.11+):
 
@@ -33,7 +31,7 @@ Open http://127.0.0.1:8765. The server binds only to loopback and serves `dist/`
 Stop it with Ctrl+C. The portable bundle includes a prebuilt `dist/`; only the
 second command is needed to preview that build. Do not open index.html directly
 as a file: browsers block its module/data requests. Build files can later be
-hosted statically; no hosting has been configured or approved.
+hosted statically; a temporary hosting rehearsal has now passed.
 
 The browser consumes `data/snapshot.json` schema 1.0.0; automated accepted
 snapshots can use the same interface without redesign. The current build input
@@ -49,7 +47,7 @@ python -m unittest discover -s tests -v
 python -m pipeline.proof --input evidence/2026-09-21 --output work/proof
 ```
 
-The proof compares all historical annual and 1991–2020 median values in two
+The proof compares all historical annual and 1991â€“2020 median values in two
 official NRCS JSON exports with their matching daily chart traces. It then emits
 JSON/CSV observations and a provenance report with source URLs and SHA-256 hashes.
 No source observations are reconstructed from basin percentages.

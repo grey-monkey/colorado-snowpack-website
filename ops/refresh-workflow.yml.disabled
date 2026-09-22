@@ -36,6 +36,9 @@ jobs:
         continue-on-error: true
         working-directory: source
         run: python -m pipeline.run --store ../history/snowpack.sqlite --output dist
+        env:
+          SIGNUP_ENABLED: ${{ vars.SIGNUP_ENABLED }}
+          SIGNUP_SERVICE_URL: ${{ vars.SIGNUP_SERVICE_URL }}
       - name: Persist accepted history and attempt status
         working-directory: history
         run: |

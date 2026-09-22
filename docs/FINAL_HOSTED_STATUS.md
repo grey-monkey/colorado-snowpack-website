@@ -1,0 +1,24 @@
+# Colorado Snowpack - final hosted readiness
+
+September 21, 2026
+
+1. **Hosted signup: PASS.** The actual Cloudflare-hosted form reached the secure backend and created exactly one inactive Kit subscriber. The preview accepted only the approved private test recipient.
+2. **Confirmation: PASS.** The owner confirmed through the email link; Kit independently reported active status. Double opt-in remains enabled, with auto-confirm off.
+3. **Weekly test delivery: PASS.** The generated accepted-history edition for September 21, 2026 passed through the authenticated hosted endpoint. Kit reported completed delivery to exactly one recipient, public=false. The owner confirmed receipt from hello@coloradosnowpack.com.
+4. **Unsubscribe/cancellation: PASS.** The owner successfully used the email unsubscribe link. Kit reported cancelled status and one unsubscribe. The cancelled record is retained to honor suppression; it was not deleted or reactivated.
+5. **Anti-abuse and failure behavior: PASS.** Seventeen live checks passed: origin restriction, malformed/oversized input, email validation, private recipient restriction, honeypot, method/content-type checks, CORS preflight, five duplicate requests, IP rate limiting, and public-asset secret scans. Repeating the weekly edition returned 409 without a second send. Local tests cover global caps and storage/provider failure. Shutdown checks confirmed graceful signup 503, sending-off 503, and unauthorized internal access 404.
+6. **Secrets: PASS.** Kit credentials, numeric form ID, test address, hashing key and automation credential are encrypted Cloudflare secrets, not client-side values. Known protected values were absent from checked public responses/assets, 63 source files and the previously checked 48 Git-history blobs. Private files remain ignored. Request bodies and provider responses are not logged by the Worker; observability remains off. No secret values are included in this report.
+7. **Public sender: READY.** Colorado Snowpack / hello@coloradosnowpack.com is confirmed in Kit, set as default, explicitly set on the signup confirmation email, and used for the weekly proof. Cloudflare forwards hello to the verified private inbox. The rule is active and catch-all is disabled. Forwarding is receive-only: ordinary replies sent from the destination inbox would expose that inbox unless a branded outbound reply service is configured; no personal reply was sent in this proof.
+8. **Email DNS: APPLIED.** Squarespace registration remains in place. Authoritative nameservers are cloe.ns.cloudflare.com and matt.ns.cloudflare.com. Kit's three CNAMEs and DMARC TXT, plus Cloudflare's three MX records, SPF TXT and DKIM TXT, are active. The old apex localhost MX and deny-all SPF were replaced. Exact values are in ColoradoSnowpack-email-DNS-proposal.md. No further email authentication record is required by the selected services. Apex/www/wildcard website A records remain DNS-only at the parking address 64.190.63.222.
+9. **Personal information: PASS for the tested subscriber-facing email path.** The branded sender was owner-verified; the owner verified Kit's Seattle footer and successful unsubscribe in response to the privacy check. Neither personal contact detail is published in the delivered report or application artifacts. Kit and Cloudflare retain required private account/destination information.
+10. **New recurring service cost: $0.** Kit Free, Cloudflare Free Workers/SQLite Durable Objects and Email Routing, and public GitHub Pages/standard Actions are the operating design. No paid upgrade or recurring paid service was activated. This remains subject to free-tier limits; existing domain renewal is excluded.
+11. **Remaining blocker: none for owner-approved launch.** Public launch is still intentionally unperformed. Signup and sending switches are OFF; no production domain attachment, recurring data retrieval, recurring newsletter schedule, or public announcement was activated. Final-domain setup and enabling the prepared workflows are separate owner-approved launch actions. The mail forwarding limitation above is operational guidance, not a requirement for automated newsletter sending.
+12. **READY FOR OWNER-APPROVED PUBLIC LAUNCH**
+
+## Evidence and preserved state
+
+Hosted preview: https://colorado-snowpack-signup-preview.grey-f4d.workers.dev
+
+Private proof version: b3d43418-4aa8-46c1-90e3-fa35331a20ac. Disabled final version: fd265487-6c68-4de1-ac21-954200eba1c2. The durable private edition reservation is retained to prevent resending. Private provider records and test-address evidence remain outside public artifacts.
+
+The GitHub Pages rehearsal remains separate from the registered domain. Launch instructions now preserve Cloudflare mail DNS and supersede the earlier Squarespace-nameserver proposal. No additional development phase is needed for this proof.

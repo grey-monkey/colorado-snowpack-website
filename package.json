@@ -1,1 +1,1 @@
-{"name":"colorado-snowpack","private":true,"type":"module","scripts":{"test":"node --test tests/model.test.js"}}
+{"name":"colorado-snowpack","private":true,"type":"module","scripts":{"test":"node --test tests/model.test.js"},"devDependencies":{"wrangler":"4.136.1"}}
