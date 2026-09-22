@@ -61,7 +61,7 @@ async function load(){
     const groups=new Map();
     for(const r of snapshot.regions){
       const label=r.group||(r.id==='co-state'?'Statewide':'River basins');
-      if(!groups.has(label)){const group=document.createElement('optgroup');group.label=label;groups.set(label,group);}
+      if(!groups.has(label)){const group=document.createElement('optgroup');group.label=label.replace(/ drainage$/, '');groups.set(label,group);}
       groups.get(label).append(new Option(r.id==='co-state'?'Colorado statewide':r.name,r.id));
     }
     $('region').replaceChildren(...groups.values());$('region').value=region.id;
