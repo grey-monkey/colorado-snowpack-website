@@ -1,0 +1,1 @@
+https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/State_County/MapServer/0/query?where=STATE%3D%2708%27&outFields=NAME%2CSTATE&outSR=4326&returnGeometry=true&f=geojson

@@ -1,8 +1,9 @@
+import {initBasinMap} from './basin-map.js';
 import {calendarDate,condition,freshness,yearSeries,weeklyChange,validateSnapshot} from './model.js';
 const $=id=>document.getElementById(id);
 const fmtDate=s=>new Date(s+'T12:00:00Z').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric',timeZone:'UTC'});
 const fmt=v=>v===null?'Not reported':v===0?'0.00':v<0.005?'<0.005':v.toFixed(2);
-let snapshot, region, year, current, previous;
+let snapshot, region, year, current, previous, basinMap;
 function renderChart(){
   const width=Math.max(280,$('chart').clientWidth), height=width<600?235:290,left=36,right=14,top=10,bottom=29;
   const max=Math.max(1,...current.map(x=>x.value??0),...previous.map(x=>x.value??0),...region.median.map(x=>x??0));
@@ -26,6 +27,7 @@ function inspectDate(){
   for(const [label,value] of [[year,row.value],[year-1,prev.value],['Historic Median',row.median]]){const div=document.createElement('div'),b=document.createElement('b'),span=document.createElement('span');b.textContent=value===null?'—':fmt(value)+' in';span.textContent=label+(value===null?' · not reported':'');div.append(b,span);$('date-reading').append(div);}
   $('day').setAttribute('aria-valuetext',`${title}; ${year}: ${fmt(row.value)} inches; ${year-1}: ${fmt(prev.value)} inches; historic median: ${fmt(row.median)} inches`);
   renderChart();
+  basinMap?.update({regionId:region.id,year,day:Number($('day').value)});
 }
 function renderSeason(){
   current=yearSeries(region,year);previous=yearSeries(region,year-1);
@@ -51,7 +53,7 @@ function renderRegion(){
   $('change-copy').textContent=change.value===null?'A measurement is missing for one of the two dates, so we cannot calculate the weekly change.':'This compares the water held in snow now with a week ago. It is not a snowfall total. The reporting sites can change from day to day, so small differences deserve some caution.';
   renderSeason();
 }
-function syncURL(){const u=new URL(location.href);u.searchParams.set('region',region.id);u.searchParams.set('year',year);history.replaceState(null,'',u);}
+function syncURL(){const u=new URL(location.href);u.searchParams.set('region',region.id);u.searchParams.set('year',year);const selectedDate=calendarDate(year,region.dates[Number($('day').value)]);if(selectedDate)u.searchParams.set('date',selectedDate);else u.searchParams.delete('date');history.replaceState(null,'',u);}
 async function load(){
   $('load-error').hidden=true;$('dashboard').hidden=true;$('snapshot-status').textContent='Loading the verified snowpack snapshot…';
   try{
@@ -67,8 +69,18 @@ async function load(){
     $('region').replaceChildren(...groups.values());$('region').value=region.id;
     $('season').replaceChildren(...years.map(y=>new Option(y,y)));$('season').value=year;
     $('day').value=Math.max(0,region.dates.indexOf(snapshot.observation_date.slice(5,10)));
+    const requestedDate=params.get('date');
+    if(requestedDate&&/^\d{4}-\d{2}-\d{2}$/.test(requestedDate)){
+      const requestedYear=Number(requestedDate.slice(0,4))+(Number(requestedDate.slice(5,7))>=10?1:0),md=requestedDate.slice(5);
+      if(years.includes(requestedYear)&&region.dates.includes(md)&&calendarDate(requestedYear,md)===requestedDate&&requestedDate<=snapshot.observation_date){year=requestedYear;$('season').value=year;$('day').value=region.dates.indexOf(md);}
+    }
     const status=freshness(snapshot);$('snapshot-status').textContent=`${status.label} · Observed ${fmtDate(snapshot.observation_date)}${status.stale?' · '+status.age+' days old':''}`;
-    $('dashboard').hidden=false;renderRegion();
+    $('dashboard').hidden=false;
+    try{basinMap=await initBasinMap(snapshot,{
+      onSelect:id=>{region=snapshot.regions.find(r=>r.id===id);$('region').value=id;renderRegion();syncURL();},
+      onDate:date=>{year=Number(date.slice(0,4))+(Number(date.slice(5,7))>=10?1:0);$('season').value=year;$('day').value=region.dates.indexOf(date.slice(5));renderSeason();syncURL();}
+    });}catch{ $('basin-map-canvas').textContent='The map could not load. The region menu and chart still work.'; }
+    renderRegion();
     if(document.body.dataset.health){
       // Health failure must never hide an already accepted data snapshot.
       try{const healthResponse=await fetch(document.body.dataset.health,{cache:'no-store',signal:AbortSignal.timeout(4000)});
@@ -79,6 +91,6 @@ async function load(){
 }
 $('region').addEventListener('change',()=>{region=snapshot.regions.find(r=>r.id===$('region').value);renderRegion();syncURL();});
 $('season').addEventListener('change',()=>{year=Number($('season').value);renderSeason();syncURL();});
-$('day').addEventListener('input',inspectDate);$('retry').addEventListener('click',load);
+$('day').addEventListener('input',()=>{inspectDate();syncURL();});$('retry').addEventListener('click',load);
 new ResizeObserver(()=>{if(current)renderChart();}).observe($('chart'));
 load();

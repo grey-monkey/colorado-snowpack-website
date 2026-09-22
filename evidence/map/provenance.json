@@ -1,0 +1,10 @@
+{
+  "basin_source": "https://nwcc-apps.sc.egov.usda.gov/awdb/basin-defs/geojson/co_8.geojson",
+  "state_source": "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/State_County/MapServer/0/query?where=STATE%3D%2708%27&outFields=NAME%2CSTATE&outSR=4326&returnGeometry=true&f=geojson",
+  "projection": "Albers equal-area; center 39 N, 105.5 W; standard parallels 37/41 N",
+  "transformation": "All source vertices projected; no added basin geometry, no further simplification. State clipping applied at rendering.",
+  "sha256": {
+    "colorado-state.geojson": "a44bc7ae1fa93ed7026d85cd4dcc381c46360d2cb69a22328eef5c8edc345cf7",
+    "co_8.geojson": "aec80c679ad09805a3a5f8f2f14f8ae53ad9fe284dab52642d263596e8e28f43"
+  }
+}
