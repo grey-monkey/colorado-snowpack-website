@@ -3,9 +3,48 @@
   "main": "worker.js",
   "compatibility_date": "2026-09-21",
   "workers_dev": true,
-  "assets": { "directory": "../worker-dist", "binding": "ASSETS", "run_worker_first": ["/api/*", "/internal/*"] },
-  "observability": { "enabled": false },
-  "durable_objects": { "bindings": [{ "name": "GUARD", "class_name": "SignupGuard" }, { "name": "EDITIONS", "class_name": "EditionLedger" }] },
-  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["SignupGuard"] }, { "tag": "v2", "new_sqlite_classes": ["EditionLedger"] }],
-  "vars": { "SIGNUP_MODE": "off", "NEWSLETTER_MODE": "off", "ALLOWED_ORIGINS": "", "SITE_ORIGIN": "https://coloradosnowpack.com" }
+  "assets": {
+    "directory": "../worker-dist",
+    "binding": "ASSETS",
+    "run_worker_first": [
+      "/api/*",
+      "/internal/*"
+    ]
+  },
+  "observability": {
+    "enabled": false
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "GUARD",
+        "class_name": "SignupGuard"
+      },
+      {
+        "name": "EDITIONS",
+        "class_name": "EditionLedger"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": [
+        "SignupGuard"
+      ]
+    },
+    {
+      "tag": "v2",
+      "new_sqlite_classes": [
+        "EditionLedger"
+      ]
+    }
+  ],
+  "vars": {
+    "SIGNUP_MODE": "public",
+    "NEWSLETTER_MODE": "enabled",
+    "ALLOWED_ORIGINS": "https://coloradosnowpack.com,https://www.coloradosnowpack.com",
+    "SITE_ORIGIN": "https://coloradosnowpack.com",
+    "SENDER_EMAIL": "hello@coloradosnowpack.com"
+  }
 }
