@@ -1,2 +1,5 @@
 evidence/2026-09-21/* -text
 evidence/*.gz binary
+
+# Preserve downloaded map evidence byte-for-byte for provenance hashes.
+evidence/map/*.geojson -text
