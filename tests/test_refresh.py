@@ -96,6 +96,8 @@ class AcceptedFlow(unittest.TestCase):
     def test_publish_pins_consistent_release_and_retains_it_on_failure(self):
         refresh(self.store,self.source.__getitem__,NOW);public=Path(self.temp.name)/'public'
         publish(self.store,public);path=public/'data/releases/1'
+        for asset in ('longs-peak.webp','manrope-latin.woff2','OFL-Manrope.txt'):
+            self.assertEqual((public/'assets'/asset).read_bytes(),(EVIDENCE.parents[1]/'site/assets'/asset).read_bytes())
         before=(path/'snapshot.json').read_bytes();snapshot=json.loads(before)
         exported=json.loads((path/'series.json').read_text())
         self.assertEqual(snapshot['release_id'],exported['metadata']['release_id'])

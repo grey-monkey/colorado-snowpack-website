@@ -1,0 +1,12 @@
+Colorado Snowpack visual assets
+
+Longs Peak and Mount Meeker photograph: NPS/D. Turk.
+Source: https://www.nps.gov/romo/index.htm
+Image: https://www.nps.gov/common/uploads/structured_data/884D97C7-DE25-EC69-F4D8B6378AA8E14C.jpg
+National Park Service photograph. Landscape only; not current observation data.
+
+Manrope variable font, Latin subset: Google Fonts, SIL Open Font License.
+https://github.com/google/fonts/tree/main/ofl/manrope
+See OFL-Manrope.txt for license and copyright.
+
+Mountain emblem and abstract contour SVG: created for Colorado Snowpack.

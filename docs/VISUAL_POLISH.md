@@ -1,34 +1,32 @@
-# Colorado Snowpack - final visual polish
+# Colorado Snowpack — branding, typography, and copy review
 
-## Result
+READY FOR PUBLIC LAUNCH — pending the owner’s separate launch authorization.
 
-READY FOR PUBLIC LAUNCH - pending the owner's separate launch authorization.
+## What changed
 
-The four supplied references were used only for aesthetic direction: muted natural colors, editorial hierarchy, restrained cards and abstract contour linework. No reference layout or photography was copied.
+A new mountain emblem and stacked wordmark anchor the site. Locally hosted Manrope replaces the thin serif headings, with stronger headline, section, and numerical hierarchy. Warm ivory and evergreen surfaces remain, with a credited National Park Service photograph of Longs Peak and Mount Meeker. The photograph is explicitly labeled as a landscape, not current conditions. The references supplied by the owner were used only for aesthetic inspiration.
 
-## Visual changes
-
-- Warmer cream surfaces, deeper evergreen readings, and a compact mountain wordmark treatment.
-- Current SWE appears earlier on phones; desktop uses a composed side-by-side condition and measurement card.
-- Restrained abstract contours behind the introduction and reading panel. These are decorative, not a map or data layer.
-- A unified chart card, clearer date-inspection panel, stronger table presentation and generous touch targets.
-- Calmer newsletter styling with a clear field and button in the private form preview. Public signup remains closed.
-- No new JavaScript, fonts, dependencies, photography or animation. The decorative SVG is 768 bytes in source; total stylesheet gzip size is approximately 5.1 KB.
+The home page, measurement explanations, weekly changes, newsletter page, and signup copy now use plain American English with an analytical, approachable tone. Explanations distinguish snow water from snowfall, describe the historical median, and retain caveats about missing readings and changing station coverage. No data calculations were changed.
 
 ## Verification
 
-Passed at 320, 390, 768 and 1440 pixels: no page overflow; current reading visible on the phone's first screen; region/year controls; keyboard date adjustment; accessible 366-row table; touch controls; skip link; versioned CSV/JSON downloads; normal winter, measured zero, off-season, missing observation, stale, failure and retry states. No browser runtime errors.
+- Browser checks passed at 320, 390, 768, and 1440 pixels without horizontal overflow. The current reading remains above 700 pixels in the main mobile design. The hosted preview adds a temporary preview notice.
+- Checked region/year/date controls, keyboard and touch interaction, the 366-row accessible table, CSV/JSON downloads, winter, measured zero, off-season, missing data, stale data, and load failure/retry states. No browser runtime errors.
+- All 12 model/backend tests and 7 accepted-data publishing tests passed. The publisher now includes nested binary assets; tests verify that the photo and font are copied byte for byte.
+- Hosted signup simulations passed for invalid input, success, duplicate/rejoin behavior, rate limits, slow response, server failure, and offline behavior. No real emails were sent during this pass.
+- Hosted HTML, styles, scripts, logo, photo, and font match the deployed build. Signup remains disabled and returns 503.
+- Text contrast: primary 10.73:1, secondary 5.58:1, light text on evergreen 8.82:1. The large sage headline is 4.22:1. The median chart line is 3.54:1, with solid/dashed/dotted distinctions preserved.
+- The deployment asset scan found none of the stored Kit key, form ID, controlled test address, or backend secrets.
 
-Accepted-history browser checks passed, including matching exports, failed-update retention, unavailable health data and recovery. Hosted signup simulations passed for responsive layout, keyboard/touch, invalid input, success, duplicate, rejoin, rate limit, slow response, server failure and offline behavior. All 12 model/backend tests passed. No real subscriber or email test was repeated during this visual-only pass; the completed hosted lifecycle proof remains valid and its code was unchanged.
+One functional issue was found and fixed: the publisher previously skipped nested asset folders, which prevented the new photo and font from loading. No remaining functional issue was found in this pass.
 
-Checked text contrast ratios range from 5.53:1 to 10.75:1; the median chart line is 3.53:1 against the chart surface. Solid, dashed and dotted series retain non-color distinctions.
+## Assets and launch boundary
 
-Functional issues discovered: none. The deployment byte comparison encountered only LF/CRLF normalization in the SVG; the published asset matches the build and renders correctly.
+The photograph is 198,990 bytes; the local variable font is 24,836 bytes. The font license and photo credit are included. Neither requires a new paid service or an external runtime request.
 
-## Launch boundary
+Preview: https://colorado-snowpack-signup-preview.grey-f4d.workers.dev/
+Deployment version: 4043cbc8-6115-45eb-b421-4729f0cb4d8b
 
-Only the existing noindex readiness preview was updated. Signup and sending remain OFF; the signup endpoint returns a graceful 503. The production domain still resolves to its parking address. No email DNS, scheduled retrieval, recurring newsletter sending, billing or subscriber state was changed. Public build secret scan passed.
+Only the existing noindex preview was updated. Public signup and sending remain off. No production website DNS, email settings, recurring schedules, subscriber state, or billing settings were changed. The prior successful delivery/unsubscribe proof was not repeated or superseded.
 
-Preview: https://colorado-snowpack-signup-preview.grey-f4d.workers.dev
-
-Screenshots: ColoradoSnowpack-polished-desktop.png, ColoradoSnowpack-polished-mobile.png, and ColoradoSnowpack-polished-mobile-first-screen.png.
+Screenshots: ColoradoSnowpack-polished-desktop.png, ColoradoSnowpack-polished-mobile.png, ColoradoSnowpack-polished-mobile-first-screen.png.

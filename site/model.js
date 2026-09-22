@@ -9,10 +9,10 @@ export function ratio(value, median) {
 }
 export function condition(value, median) {
   if(value===null) return {kind:'missing', headline:'Observation unavailable', text:'There is no reported value for this date. Missing data does not mean no snow.'};
-  if(median===null) return {kind:'reference-missing', headline:'The comparison is unavailable', text:'A snow-water value is available, but its same-date historical reference is missing.'};
-  if(median<0.1) return {kind:'low-reference', headline:'A quiet point in the snow season.', text:median===0?'The historical median is zero on this date, so a percentage comparison would be misleading. Follow the season below for context.':'The historical median is near zero on this date, so a percentage comparison would exaggerate small differences.'};
+  if(median===null) return {kind:'reference-missing', headline:'The comparison is unavailable', text:'We have a snow-water measurement for this date, but no historical median to compare it with.'};
+  if(median<0.1) return {kind:'low-reference', headline:median===0?'The median for this date is zero.':'The median for this date is near zero.', text:median===0?'The 1991–2020 median for this date is zero inches, so a percentage comparison would be misleading. The chart puts the current reading in seasonal context.':'For this date, the 1991–2020 median is less than 0.1 inch. We leave out the percentage because such a small baseline can make modest differences look large.'};
   const percent=ratio(value,median);
-  return {kind:'normal', headline:`${Math.round(percent)}% of the same-date median.`, text:'A comparison with the published 1991–2020 reference for this date. This describes water held in snow at monitoring sites.'};
+  return {kind:'normal', headline:`${Math.round(percent)}% of the same-date median.`, text:'This compares snow water at monitoring sites with the 1991–2020 median for the same date. The median is the middle historical value: half the years were higher and half were lower.'};
 }
 export function freshness(snapshot, now=new Date()) {
   const parts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:'America/Denver',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(now).map(p=>[p.type,p.value]));

@@ -35,7 +35,7 @@ function renderSeason(){
   $('table-body').replaceChildren();
   for(let i=0;i<366;i++){const tr=document.createElement('tr');const values=[region.dates[i],current[i].date?fmt(current[i].value):'No leap date',previous[i].date?fmt(previous[i].value):'No leap date',fmt(region.median[i])];for(const [j,v]of values.entries()){const td=document.createElement(j===0?'th':'td');if(j===0)td.scope='row';td.textContent=v;tr.append(td);}$('table-body').append(tr);}
   const latestYear=Number(snapshot.observation_date.slice(0,4))+(Number(snapshot.observation_date.slice(5,7))>=10?1:0);
-  $('chart-note').textContent=`${year===latestYear?'The latest season ends at the last reported observation. ':''}Gaps mean no reported value; years align by month and day. Published station populations can vary. Values are provisional.`;
+  $('chart-note').textContent=`${year===latestYear?'The latest season ends at the last reported observation. ':''}Gaps mean no reported value; years align by month and day. The mix of reporting stations can change. NRCS may revise these readings.`;
   inspectDate();
 }
 function renderRegion(){
@@ -43,12 +43,12 @@ function renderRegion(){
   const value=region.years[waterYear]?.[i]??null,median=region.median[i]??null,state=condition(value,median);
   $('condition-title').textContent=state.headline;$('condition-copy').textContent=state.text;
   $('swe').textContent=value===null?'—':fmt(value);$('median').textContent=median===null?'Not reported':fmt(median)+' inches';
-  $('reading-label').textContent=value===null?'No reported observation for this date':'Published NRCS station-based series';
+  $('reading-label').textContent=value===null?'No reported observation for this date':'Snow water at NRCS monitoring sites';
   $('observation').textContent=`${region.id==='co-state'?'STATEWIDE':region.name.toUpperCase()} · ${fmtDate(date)}`;
   $('source').href=region.source;
   const change=weeklyChange(region,date);$('week-range').textContent=`${fmtDate(change.start)} – ${fmtDate(change.end)}`;
-  $('change-title').textContent=change.value===null?'A weekly comparison is unavailable.':Math.abs(change.value)<0.005?'Little net change in the published series.':`${Math.abs(change.value).toFixed(2)} inches ${change.value<0?'less':'more'} than a week earlier.`;
-  $('change-copy').textContent=change.value===null?'A value is missing at one end of the seven-day interval. We do not fill the gap.':'This is a difference between two published SWE values, not a snowfall total. Daily station coverage is not supplied with this export, so treat small changes cautiously.';
+  $('change-title').textContent=change.value===null?'A weekly comparison is unavailable.':Math.abs(change.value)<0.005?'Little change over the past week.':`${Math.abs(change.value).toFixed(2)} inches ${change.value<0?'less':'more'} than a week earlier.`;
+  $('change-copy').textContent=change.value===null?'A measurement is missing for one of the two dates, so we cannot calculate the weekly change.':'This compares the water held in snow now with a week ago. It is not a snowfall total. The reporting sites can change from day to day, so small differences deserve some caution.';
   renderSeason();
 }
 function syncURL(){const u=new URL(location.href);u.searchParams.set('region',region.id);u.searchParams.set('year',year);history.replaceState(null,'',u);}

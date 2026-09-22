@@ -79,6 +79,14 @@ def publish(store,output,signup_config=None):
             pending=Path(tempfile.mkdtemp(dir=target.parent,prefix='.stage-'))
             shutil.copytree(data,pending,dirs_exist_ok=True)
             os.replace(pending,target)
+        # Publish local fonts and photographs as bytes before the HTML references them.
+        for asset in (stage/'assets').rglob('*') if (stage/'assets').exists() else []:
+            if asset.is_file():
+                destination=output/asset.relative_to(stage)
+                destination.parent.mkdir(parents=True,exist_ok=True)
+                pending_asset=destination.with_name(destination.name+'.next')
+                shutil.copyfile(asset,pending_asset)
+                os.replace(pending_asset,destination)
         for file in stage.iterdir():
             if not file.is_file() or file.name=='index.html':continue
             content=file.read_text(encoding='utf-8')

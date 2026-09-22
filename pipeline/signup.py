@@ -7,7 +7,7 @@ SUCCESS='Check your inbox to confirm your subscription. Already confirmed? You a
 
 def markup(config=None):
     if not config or not config.get('enabled'):
-        return '<div class="signup-box"><p class="pill">Opening soon</p><p>A concise weekly recap of Colorado snowpack conditions and meaningful changes.</p><p>Subscriptions are not open yet.</p><a href="weekly.html">About the weekly →</a></div>'
+        return '<div class="signup-box"><p class="pill">Opening soon</p><p>A short weekly look at Colorado’s snowpack and what changed.</p><p>Subscriptions are not open yet.</p><a href="weekly.html">About the weekly →</a></div>'
     if config.get('endpoint'):
         endpoint=config['endpoint']
         if endpoint!='/api/signup' and not endpoint.startswith('https://'):raise ValueError('HTTPS signup endpoint required')
@@ -16,7 +16,7 @@ def markup(config=None):
 <div class="formkit-fields"><div class="formkit-field"><label for="signup-email">Email address</label><input id="signup-email" class="formkit-input" name="email" type="email" required maxlength="254" autocomplete="email" inputmode="email" aria-describedby="signup-consent"></div>
 <div class="signup-trap" aria-hidden="true"><label>Leave this empty<input name="website" tabindex="-1" autocomplete="off"></label></div>
 <button class="formkit-submit" type="submit" disabled>Join the weekly</button></div>
-<p id="signup-consent" class="small">A concise weekly recap of Colorado snowpack conditions and meaningful changes. Confirm by email to join. Unsubscribe any time. <a href="privacy.html">Privacy</a>.</p>
+<p id="signup-consent" class="small">A short weekly look at Colorado’s snowpack and what changed. Confirm by email to join. Unsubscribe any time. <a href="privacy.html">Privacy</a>.</p>
 </form><p class="signup-status small" role="status" aria-live="polite">Loading the signup form…</p>
 <p class="signup-rejoin small" hidden><a href="https://colorado-snowpack.kit.com/834b57394e">Request a new confirmation through Kit</a></p>
 <noscript><p>Please enable JavaScript to use the signup form.</p></noscript></div>'''
