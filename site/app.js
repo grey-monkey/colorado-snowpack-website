@@ -1,4 +1,4 @@
-import {initBasinMap} from './basin-map.js?v=map-live-1';
+import {initBasinMap} from './basin-map.js?v=map-live-2';
 import {calendarDate,condition,freshness,yearSeries,weeklyChange,validateSnapshot} from './model.js';
 const $=id=>document.getElementById(id);
 const fmtDate=s=>new Date(s+'T12:00:00Z').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric',timeZone:'UTC'});
