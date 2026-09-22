@@ -28,7 +28,7 @@ export async function initBasinMap(snapshot,{onSelect,onDate}){
  }
  $('map-component').addEventListener('click',e=>{const b=e.target.closest('[data-region]');if(b)onSelect(b.dataset.region);});
  $('basin-map-canvas').addEventListener('keydown',e=>{if(['Enter',' '].includes(e.key)&&e.target.dataset.region){e.preventDefault();onSelect(e.target.dataset.region);}});
- $('map-metric').addEventListener('change',e=>{choice=e.target.value;update(state);});$('map-latest').addEventListener('click',()=>onDate(snapshot.observation_date));
+ $('map-metric').addEventListener('change',e=>{choice=e.target.value;update(state);});
  function newsletterSVG(){const date=rows[0].reading.date;if(!date||date>snapshot.observation_date)throw new Error('Choose a reported calendar date before exporting.');const title=metric==='median'?'Compared with the historic median':'Water held in the snowpack';
  const mini=mapSVG(false).replace('viewBox="0 0 720 510"','x="25" y="192" width="730" height="520" viewBox="0 0 720 510"');
  const list=rows.map((r,i)=>{const names=r.region.name.replace('San Miguel–Dolores–Animas–San Juan','San Miguel–Dolores / Animas–San Juan').split(' / ');const y=252+i*68;return `<circle cx="803" cy="${y-5}" r="12" fill="${r.color.color}"/><text x="803" y="${y-1}" text-anchor="middle" font-size="11" font-weight="700">${i+1}</text>${names.map((n,j)=>`<text x="827" y="${y+j*16}" font-size="13" font-weight="600">${esc(n)}</text>`).join('')}<text x="827" y="${y+names.length*16+5}" font-size="17" font-weight="700">${esc(displayReading(r.reading,metric))}${r.color.kind!=='value'?' · '+esc(r.color.label):''}</text>`;}).join('');
