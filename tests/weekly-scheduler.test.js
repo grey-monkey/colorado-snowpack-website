@@ -36,12 +36,14 @@ test('cron dispatch preserves UTC time, exact workflow/ref and safe dry-run inpu
   for (const time of ['invalid', '2026-10-25T15:17:00Z', '2026-10-26T16:17:00Z', '2026-10-26T15:18:00Z']) await assert.rejects(worker.scheduled(event(time), env), /Unexpected/);
   await assert.rejects(worker.scheduled({cron: '* * * * *', scheduledTime: Date.parse('2026-10-26T15:17:00Z')}, env), /Unexpected/);
   assert.equal(calls.length, 3);
-  for (const status of [200, 401, 403, 404, 422, 429, 500]) {
+  for (const status of [401, 403, 404, 422, 429, 500]) {
    let attempts = 0;
    globalThis.fetch = async () => { attempts++; return new Response('sensitive response', {status}); };
    await assert.rejects(worker.scheduled(event('2026-10-26T15:17:00Z'), env), new RegExp(`HTTP ${status}`));
    assert.equal(attempts, 1);
   }
+  globalThis.fetch = async () => Response.json({workflow_run_id: 123});
+  await worker.scheduled(event('2026-10-26T15:17:00Z'), env);
   let attempts = 0;
   globalThis.fetch = async () => { attempts++; throw Error('fake-test-token'); };
   await assert.rejects(worker.scheduled(event('2026-10-26T15:17:00Z'), env), /dispatch uncertain; inspect GitHub/);
@@ -51,6 +53,7 @@ test('cron dispatch preserves UTC time, exact workflow/ref and safe dry-run inpu
 
 test('checked-in cron and workflow keep cutover gate, manual dry-run default and send safeguards', () => {
  const config = JSON.parse(readFileSync(new URL('../backend/wrangler.jsonc', import.meta.url)));
+ assert.equal(WEEKLY_CRON, '17 15 * * MON');
  assert.deepEqual(config.triggers.crons, [WEEKLY_CRON]);
  assert.equal(config.vars.WEEKLY_SCHEDULER_MODE, 'off');
  assert.ok(config.durable_objects.bindings.some(b => b.name === 'EDITIONS' && b.class_name === 'EditionLedger'));

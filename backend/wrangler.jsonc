@@ -4,7 +4,7 @@
   "compatibility_date": "2026-09-21",
   "workers_dev": true,
   "triggers": {
-    "crons": ["17 15 * * 1"]
+    "crons": ["17 15 * * MON"]
   },
   "assets": {
     "directory": "../worker-dist",

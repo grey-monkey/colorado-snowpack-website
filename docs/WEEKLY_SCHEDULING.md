@@ -32,16 +32,17 @@ Moving the cron earlier merely guesses at a variable delay.
 ## Implementation
 
 Use a Cloudflare Cron Trigger in the **existing backend Worker** at the same
-UTC time to POST a `workflow_dispatch` to `weekly.yml` on `readiness-preview`.
+UTC time (`17 15 * * MON`) to POST a `workflow_dispatch` to `weekly.yml` on `readiness-preview`.
 The existing Python generator, accepted-history checkout, workflow concurrency,
 GitHub `WEEKLY_ENABLED` gate, backend `NEWSLETTER_MODE`, authentication and
 SQLite-backed `EditionLedger` remain in place. No data/generation port to JS,
-new service, new public endpoint, Kit key movement or ledger migration is needed.
+new service, new public endpoint, Kit key movement or ledger migration is needed. Cloudflare
+uses 1 for Sunday, unlike GitHub; the named weekday `MON` prevents that mismatch.
 
 The scheduler's only new secret is a repository-scoped GitHub dispatch token.
 It cannot call Kit or bypass the edition ledger. The handler validates the cron
 and scheduled UTC slot, uses a bounded request, rejects redirects, and never
-logs credentials or GitHub response bodies. A 204 means **dispatch accepted**,
+logs credentials or GitHub response bodies. A successful HTTP 200 (or legacy 204) means **dispatch accepted**,
 not job success or email delivery. Ambiguous failures are not retried blindly.
 The scheduled timestamp is diagnostic only; it never overrides edition identity.
 
@@ -77,7 +78,7 @@ until explicitly switched. Merging alone does not change production scheduling.
 5. Verify the new run has event `workflow_dispatch`, `dry_run=true`, the expected
    `scheduled_for`, and `generated_only` in its output. A successful dispatch can
    still yield a skipped job if GitHub `WEEKLY_ENABLED` is not `true`, or fail
-   generation if accepted data is stale. Inspect the run, not only HTTP 204.
+   generation if accepted data is stale. Inspect the run, not only the dispatch HTTP status.
    The original GitHub cron continues the normal production send during this
    rehearsal; the Cloudflare dry run submits no edition to the backend.
 6. Set Worker `WEEKLY_SCHEDULER_MODE=enabled` and deploy. Confirm GitHub repository
@@ -119,6 +120,10 @@ on both sides of DST, precise workflow/ref/inputs, dry-run and off modes, backen
 mode gating, missing credentials, wrong events, rejected/uncertain dispatch with
 no retry, workflow cutover safety, unchanged edition payload/authentication,
 and durable no-resend behavior through success, restart and provider timeout.
+
+The static build (`python -m pipeline.build`), all 22 Python tests
+(`python -m unittest discover -s tests -v`), all 17 JavaScript tests
+(`node --test tests/*.test.js`), and `git diff --check` passed locally.
 
 No production workflow was dispatched or rerun, no backend send was called,
 no broadcast was created, and no live Cloudflare deployment or token was

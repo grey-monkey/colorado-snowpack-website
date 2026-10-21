@@ -1,5 +1,5 @@
 // Only dispatch the existing workflow. Kit and the edition ledger stay downstream.
-export const WEEKLY_CRON = '17 15 * * 1';
+export const WEEKLY_CRON = '17 15 * * MON';
 export const DISPATCH_URL = 'https://api.github.com/repos/grey-monkey/colorado-snowpack-website/actions/workflows/weekly.yml/dispatches';
 
 export async function dispatchWeekly(controller, env) {
@@ -21,7 +21,7 @@ export async function dispatchWeekly(controller, env) {
     Authorization: `Bearer ${env.WEEKLY_DISPATCH_TOKEN}`,
     Accept: 'application/vnd.github+json', 'Content-Type': 'application/json',
     'User-Agent': 'ColoradoSnowpack-Weekly-Scheduler',
-    'X-GitHub-Api-Version': '2022-11-28'
+    'X-GitHub-Api-Version': '2026-03-10'
    },
    body: JSON.stringify({ref: 'readiness-preview', inputs: {
     dry_run: mode === 'dry_run', scheduled_for: scheduledFor
@@ -31,7 +31,7 @@ export async function dispatchWeekly(controller, env) {
   // No retry: a lost response may already have dispatched the workflow.
   throw Error('Weekly dispatch uncertain; inspect GitHub Actions before retrying');
  }
- if (response.status !== 204) throw Error(`Weekly dispatch rejected (HTTP ${response.status})`);
+ if (![200, 204].includes(response.status)) throw Error(`Weekly dispatch rejected (HTTP ${response.status})`);
  // No token, payload, recipient or provider response is logged.
  console.log(JSON.stringify({status: 'workflow_dispatched', scheduled_for: scheduledFor, dry_run: mode === 'dry_run'}));
 }
