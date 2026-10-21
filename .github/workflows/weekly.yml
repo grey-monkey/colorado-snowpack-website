@@ -6,7 +6,12 @@ on:
         description: 'Generate and validate without sending'
         type: boolean
         default: true
+      scheduled_for:
+        description: 'Original UTC cron time, for timing diagnostics only'
+        type: string
+        default: ''
   schedule:
+    # Migration fallback: disabled when WEEKLY_SCHEDULER=cloudflare.
     - cron: '17 15 * * 1'
 permissions:
   contents: read
@@ -15,10 +20,19 @@ concurrency:
   cancel-in-progress: false
 jobs:
   weekly:
-    if: vars.WEEKLY_ENABLED == 'true'
+    if: vars.WEEKLY_ENABLED == 'true' && (github.event_name != 'schedule' || vars.WEEKLY_SCHEDULER != 'cloudflare')
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
+      - name: Record trigger timing
+        env:
+          TRIGGER_EVENT: ${{ github.event_name }}
+          SCHEDULED_FOR: ${{ inputs.scheduled_for }}
+        run: |
+          python - <<'PY'
+          import datetime, json, os
+          print(json.dumps({'event': os.environ['TRIGGER_EVENT'], 'scheduled_for': os.environ['SCHEDULED_FOR'], 'runner_observed_at': datetime.datetime.now(datetime.timezone.utc).isoformat()}))
+          PY
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
           path: source

@@ -3,6 +3,9 @@
   "main": "worker.js",
   "compatibility_date": "2026-09-21",
   "workers_dev": true,
+  "triggers": {
+    "crons": ["17 15 * * 1"]
+  },
   "assets": {
     "directory": "../worker-dist",
     "binding": "ASSETS",
@@ -41,6 +44,7 @@
     }
   ],
   "vars": {
+    "WEEKLY_SCHEDULER_MODE": "off",
     "SIGNUP_MODE": "public",
     "NEWSLETTER_MODE": "enabled",
     "ALLOWED_ORIGINS": "https://coloradosnowpack.com,https://www.coloradosnowpack.com",
