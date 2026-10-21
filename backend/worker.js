@@ -1,3 +1,4 @@
+import {dispatchWeekly} from './weekly-scheduler.js';
 // No request bodies, addresses, credentials or provider responses are logged.
 const SUCCESS='Check your inbox to confirm your subscription. If you already subscribe, you are all set.';
 const UNAVAILABLE='Signup is temporarily unavailable. Please try again later.';
@@ -48,7 +49,7 @@ export async function signup(request,env){
   return json({message:'We could not confirm the request. Check your inbox before trying again in an hour.'},503);
  }
 }
-export default {async fetch(request,env){
+export default {scheduled: dispatchWeekly, async fetch(request,env){
  const url=new URL(request.url);
  if(url.pathname==='/internal/weekly'){
   if(!env.AUTOMATION_SECRET||request.headers.get('Authorization')!==`Bearer ${env.AUTOMATION_SECRET}`)return json({message:'Not found'},404);

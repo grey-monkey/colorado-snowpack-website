@@ -58,3 +58,8 @@ The supplied owner brief is preserved in `docs/BUILD_BRIEF.md`.
 
 This checkout belongs to https://github.com/grey-monkey/colorado-snowpack-website.
 The repository was empty when inspected on September 21, 2026.
+
+## Weekly newsletter scheduling
+
+See [weekly scheduling](docs/WEEKLY_SCHEDULING.md) for the delayed-run
+investigation, Cloudflare dispatch setup, no-broadcast rehearsal and rollback.
