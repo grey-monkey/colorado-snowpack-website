@@ -70,6 +70,36 @@ class AcceptedFlow(unittest.TestCase):
         self.assertEqual(refresh(self.store,self.source.__getitem__,NOW.replace(day=25))['status'],'source_missing')
         self.assertEqual(self.read(),initial)
 
+    def test_staggered_products_use_verified_common_date_and_recover(self):
+        refresh(self.store,self.source.__getitem__,NOW)
+        staggered=altered(self.source)
+        for extension in ('.json','-chart.html'):
+            url=BASE+PRODUCTS['state'][2]+('.html' if extension=='-chart.html' else '.json')
+            staggered[url]=self.source[url]
+        result=refresh(self.store,staggered.__getitem__,NOW.replace(day=22))
+        self.assertEqual(result['status'],'accepted')
+        release=self.read()
+        self.assertEqual(release['observation_date'],'2026-09-21')
+        self.assertTrue(all(r['observation_date']<='2026-09-21' for r in release['observations']))
+        basin=next(p for p in release['metadata']['products'] if p['region_id']==PRODUCTS['basin'][0])
+        self.assertEqual(basin['source_latest']['observation_date'],'2026-09-22')
+        self.assertEqual(basin['latest']['observation_date'],'2026-09-21')
+        self.assertEqual(refresh(self.store,staggered.__getitem__,NOW.replace(day=22))['status'],'unchanged')
+        self.assertEqual(refresh(self.store,staggered.__getitem__,NOW.replace(day=24))['reason'],
+            'source_date_outside_freshness_window')
+        self.assertEqual(self.read(),release)
+        self.assertEqual(refresh(self.store,altered(self.source).__getitem__,NOW.replace(day=22))['status'],'accepted')
+        self.assertEqual(self.read()['observation_date'],'2026-09-22')
+
+    def test_staggered_products_reject_missing_common_endpoint(self):
+        staggered=altered(altered(self.source,md='09-21',value=None))
+        for suffix in ('.json','.html'):
+            url=BASE+PRODUCTS['state'][2]+suffix
+            staggered[url]=self.source[url]
+        result=refresh(self.store,staggered.__getitem__,NOW.replace(day=22))
+        self.assertEqual(result['reason'],'common_observation_missing')
+        self.assertIsNone(self.read())
+
     def test_measured_zero_is_accepted_not_missing(self):
         result=refresh(self.store,altered(self.source,value=0).__getitem__,NOW.replace(day=22))
         self.assertEqual(result['status'],'accepted')
