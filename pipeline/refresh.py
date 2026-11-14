@@ -107,12 +107,21 @@ def candidate(payloads,today):
                 raise Rejected('validation_failed','future_observation')
         dates.append(observed)
         observations.extend(normalized);proofs.append(proof)
-    if len(set(dates))!=1:
-        raise Rejected('source_missing','products_not_aligned')
+    # NRCS publishes regions independently. Compare all regions on the newest
+    # common date instead of rejecting a valid batch when one report is ahead.
+    # Every product still passes chart/export verification and the freshness limit.
+    common_date=min(dates).isoformat()
+    endpoints={r['region_id']:r for r in observations
+        if r['observation_date']==common_date and r['swe_inches'] is not None}
+    if len(endpoints)!=len(PRODUCTS):
+        raise Rejected('source_missing','common_observation_missing')
+    for proof in proofs:
+        proof['source_latest']=proof['latest']
+        proof['latest']=endpoints[proof['region_id']]
     # Do not store placeholder future dates as historical observations.
-    observations=[r for r in observations if r['observation_date']<=dates[0].isoformat()]
+    observations=[r for r in observations if r['observation_date']<=common_date]
     observations.sort(key=lambda r:(r['region_id'],r['observation_date']))
-    return dict(observation_date=dates[0].isoformat(),observations=observations,
+    return dict(observation_date=common_date,observations=observations,
         metadata=dict(schema_version='0.1.0',method_version=VERSION,source_sha256=hashes,
             products=proofs,status='accepted',reference_period='1991-2020',units='inches SWE',
             limitation='Published station-based series; daily coverage and weights not independently verified.'))
