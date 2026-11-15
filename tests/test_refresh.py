@@ -70,35 +70,50 @@ class AcceptedFlow(unittest.TestCase):
         self.assertEqual(refresh(self.store,self.source.__getitem__,NOW.replace(day=25))['status'],'source_missing')
         self.assertEqual(self.read(),initial)
 
-    def test_staggered_products_use_verified_common_date_and_recover(self):
+    def test_delayed_region_does_not_block_fresh_basins(self):
+        from pipeline.publish import snapshot_for
+        from pipeline.newsletter import edition
         refresh(self.store,self.source.__getitem__,NOW)
         staggered=altered(self.source)
-        for extension in ('.json','-chart.html'):
-            url=BASE+PRODUCTS['state'][2]+('.html' if extension=='-chart.html' else '.json')
+        for suffix in ('.json','.html'):
+            url=BASE+PRODUCTS['state'][2]+suffix
             staggered[url]=self.source[url]
-        result=refresh(self.store,staggered.__getitem__,NOW.replace(day=22))
+        # State is three days old while basins remain within the freshness window.
+        result=refresh(self.store,staggered.__getitem__,NOW.replace(day=24))
         self.assertEqual(result['status'],'accepted')
         release=self.read()
-        self.assertEqual(release['observation_date'],'2026-09-21')
-        self.assertTrue(all(r['observation_date']<='2026-09-21' for r in release['observations']))
-        basin=next(p for p in release['metadata']['products'] if p['region_id']==PRODUCTS['basin'][0])
-        self.assertEqual(basin['source_latest']['observation_date'],'2026-09-22')
-        self.assertEqual(basin['latest']['observation_date'],'2026-09-21')
-        self.assertEqual(refresh(self.store,staggered.__getitem__,NOW.replace(day=22))['status'],'unchanged')
-        self.assertEqual(refresh(self.store,staggered.__getitem__,NOW.replace(day=24))['reason'],
+        self.assertEqual(release['observation_date'],'2026-09-22')
+        self.assertEqual(release['metadata']['common_observation_date'],'2026-09-21')
+        snapshot=snapshot_for(release)
+        state=next(r for r in snapshot['regions'] if r['id']==PRODUCTS['state'][0])
+        basin=next(r for r in snapshot['regions'] if r['id']==PRODUCTS['basin'][0])
+        self.assertEqual(state['observation_date'],'2026-09-21')
+        self.assertIsNone(state['years']['2026'][state['dates'].index('09-22')])
+        self.assertEqual(basin['observation_date'],'2026-09-22')
+        self.assertEqual(basin['years']['2026'][basin['dates'].index('09-22')],.1)
+        self.assertFalse(facts(release,today=date(2026,9,24))['delivery_eligible'])
+        with self.assertRaisesRegex(ValueError,'Withheld'):edition(release,today=date(2026,9,24))
+        self.assertEqual(refresh(self.store,staggered.__getitem__,NOW.replace(day=24))['status'],'unchanged')
+        self.assertEqual(refresh(self.store,staggered.__getitem__,NOW.replace(day=25))['reason'],
             'source_date_outside_freshness_window')
         self.assertEqual(self.read(),release)
-        self.assertEqual(refresh(self.store,altered(self.source).__getitem__,NOW.replace(day=22))['status'],'accepted')
-        self.assertEqual(self.read()['observation_date'],'2026-09-22')
+        # A fresh batch cannot silently remove an already accepted regional day.
+        regressed=altered(self.source)
+        urlbase=BASE+PRODUCTS['basin'][2]
+        for suffix in ('.json','.html'):regressed[urlbase+suffix]=self.source[urlbase+suffix]
+        self.assertEqual(refresh(self.store,regressed.__getitem__,NOW.replace(day=24))['reason'],'historical_coverage_removed')
+        self.assertEqual(self.read(),release)
+        self.assertEqual(refresh(self.store,altered(self.source).__getitem__,NOW.replace(day=24))['status'],'accepted')
+        self.assertTrue(facts(self.read(),today=date(2026,9,24))['delivery_eligible'])
 
-    def test_staggered_products_reject_missing_common_endpoint(self):
+    def test_missing_common_endpoint_withholds_weekly_not_fresh_basins(self):
         staggered=altered(altered(self.source,md='09-21',value=None))
         for suffix in ('.json','.html'):
             url=BASE+PRODUCTS['state'][2]+suffix
             staggered[url]=self.source[url]
         result=refresh(self.store,staggered.__getitem__,NOW.replace(day=22))
-        self.assertEqual(result['reason'],'common_observation_missing')
-        self.assertIsNone(self.read())
+        self.assertEqual(result['status'],'accepted')
+        self.assertFalse(facts(self.read(),today=date(2026,9,22))['delivery_eligible'])
 
     def test_measured_zero_is_accepted_not_missing(self):
         result=refresh(self.store,altered(self.source,value=0).__getitem__,NOW.replace(day=22))

@@ -5,7 +5,8 @@ from .proof import percentage
 
 
 def facts(release,end=None,today=None):
-    end=date.fromisoformat(end or release['observation_date'])
+    common_date=release['metadata'].get('common_observation_date',release['observation_date'])
+    end=date.fromisoformat(end or common_date)
     today=today or datetime.now(ZoneInfo('America/Denver')).date()
     if end>date.fromisoformat(release['observation_date']):
         raise ValueError('Reporting interval extends beyond accepted observations')

@@ -36,7 +36,7 @@ def snapshot_for(release):
                 row=next((rows[(p['region_id'],y,md)] for y in range(year-1,year-5,-1) if (p['region_id'],y,md) in rows),None)
             median.append(row['median_inches'] if row else None)
         years={str(y):[rows.get((p['region_id'],y,md),{}).get('swe_inches') for md in dates] for y in range(year-3,year+1)}
-        regions.append(dict(id=p['region_id'],name=p['region_name'],group=REGION_GROUPS[p['region_id']],source=p['source_chart'],
+        regions.append(dict(id=p['region_id'],observation_date=p['latest']['observation_date'],name=p['region_name'],group=REGION_GROUPS[p['region_id']],source=p['source_chart'],
             coverage=[int(p['historical_water_years'][0]),year],station_labels=p['chart_series_labels'],
             dates=dates,median=median,years=years))
     return dict(schema_version='1.0.0',status='accepted',release_id=release['id'],observation_date=release['observation_date'],
@@ -110,8 +110,8 @@ def accepted_page(content,release,data_relative):
     content=content.replace('water years 2024–2026',f'water years {year-2}–{year}')
     content=content.replace('water years 1987–2026',f'water years 1987–{year}').replace('water years 1986–2026',f'water years 1986–{year}')
     content=content.replace('data/series.',data_relative+'/series.').replace('data/metadata.json',data_relative+'/metadata.json')
-    content=content.replace('Frozen research snapshot · September 21, 2026.',f'Accepted observations · {release["observation_date"]}.')
-    content=content.replace('This local preview does not retrieve new measurements automatically.','Measurements are checked twice daily. If an update fails validation, the site keeps the last verified readings.')
+    content=content.replace('Frozen research snapshot · September 21, 2026.',f'Latest regional observations · {release["observation_date"]}. Dates vary by region.')
+    content=content.replace('This local preview does not retrieve new measurements automatically.','Measurements are checked twice daily. Each region shows its own observation date; reports over two days old are marked as delayed. Fresh basin reports can update while the statewide report is delayed. The map compares readings on the selected calendar date, with missing reports left blank. The weekly email uses a common date and is withheld if that date is stale or a weekly endpoint is missing. If verification fails, the site keeps the last verified readings.')
     content=content.replace('30,378 annual/reference value positions',f'{sum(p["matched_values"] for p in release["metadata"]["products"]):,} annual/reference value positions')
     content=content.replace('The frozen preview retains the original values; it is not silently refreshed.','Accepted revisions are retained in a versioned history; each download identifies its accepted release.')
     content=content.replace('This is a frozen local preview; production revisions will need dated correction records.','Accepted revisions are retained in versioned history. Each download identifies its release.')

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {condition,ratio,freshness,calendarDate,weeklyChange,validateSnapshot,yearSeries} from '../site/model.js';
+import {condition,ratio,freshness,calendarDate,weeklyChange,validateSnapshot,yearSeries,regionalStatus} from '../site/model.js';
 import {readFileSync} from 'node:fs';
 test('off-season and near-zero reference never produce a ratio',()=>{assert.equal(ratio(.044,0),null);assert.equal(condition(.044,0).kind,'low-reference');assert.equal(ratio(1,.099),null);});
 test('measured zero and missing are distinct, including winter',()=>{assert.equal(condition(0,10).headline,'0% of the same-date median.');assert.equal(condition(null,10).kind,'missing');assert.equal(ratio(0,10),0);assert.equal(ratio(null,10),null);assert.equal(condition(4,null).kind,'reference-missing');});
@@ -11,3 +11,12 @@ test('freshness uses Denver calendar days rather than UTC rollover',()=>assert.e
 test('calendar alignment handles leap dates and water-year boundaries',()=>{assert.equal(calendarDate(2025,'02-29'),null);assert.equal(calendarDate(2024,'02-29'),'2024-02-29');assert.equal(calendarDate(2026,'10-01'),'2025-10-01');assert.equal(calendarDate(2026,'09-30'),'2026-09-30');});
 test('weekly interval crosses a water-year boundary without substituting dates',()=>{const r={dates:['09-28','10-05'],years:{2025:[2,null],2026:[null,3]}};assert.deepEqual(weeklyChange(r,'2025-10-05'),{start:'2025-09-28',end:'2025-10-05',value:1});r.years[2025][0]=null;assert.equal(weeklyChange(r,'2025-10-05').value,null);});
 test('built snapshot passes validation and preserves source values',()=>{const html=readFileSync(new URL('../dist/index.html',import.meta.url),'utf8');const dataPath=html.match(/data-snapshot="([^"]+)"/)?.[1]||'data/snapshot.json';const s=validateSnapshot(JSON.parse(readFileSync(new URL('../dist/'+dataPath,import.meta.url))));const r=s.regions[0],i=r.dates.indexOf('09-21');assert.equal(r.years['2026'][i],.0443478261);assert.equal(r.median[i],0);assert.equal(yearSeries(r,2025).find(d=>d.md==='02-29').date,null);r.years['2026'][i]=Infinity;assert.throws(()=>validateSnapshot(s));});
+
+test('regional freshness cannot borrow the date of a newer basin',()=>{
+ const snapshot={status:'accepted',observation_date:'2026-11-15'},now=new Date('2026-11-15T15:00:00Z');
+ const state=regionalStatus(snapshot,{observation_date:'2026-11-12'},now);
+ const basin=regionalStatus(snapshot,{observation_date:'2026-11-15'},now);
+ assert.equal(state.date,'2026-11-12');assert.equal(state.stale,true);assert.equal(state.age,3);
+ assert.equal(basin.stale,false);assert.equal(basin.age,0);
+ assert.equal(regionalStatus(snapshot,{},now).date,'2026-11-15');
+});

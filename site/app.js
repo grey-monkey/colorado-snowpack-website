@@ -1,9 +1,9 @@
 import {initBasinMap} from './basin-map.js?v=map-live-4';
-import {calendarDate,condition,freshness,yearSeries,weeklyChange,validateSnapshot} from './model.js';
+import {calendarDate,condition,freshness,yearSeries,weeklyChange,validateSnapshot,regionalStatus} from './model.js?v=regional-dates-1';
 const $=id=>document.getElementById(id);
 const fmtDate=s=>new Date(s+'T12:00:00Z').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric',timeZone:'UTC'});
 const fmt=v=>v===null?'Not reported':v===0?'0.00':v<0.005?'<0.005':v.toFixed(2);
-let snapshot, region, year, current, previous, basinMap;
+let snapshot, region, year, current, previous, basinMap, healthNotice='';
 function renderChart(){
   const width=Math.max(280,$('chart').clientWidth), height=width<600?235:290,left=36,right=14,top=10,bottom=29;
   const max=Math.max(1,...current.map(x=>x.value??0),...previous.map(x=>x.value??0),...region.median.map(x=>x??0));
@@ -41,7 +41,9 @@ function renderSeason(){
   inspectDate();
 }
 function renderRegion(){
-  const date=snapshot.observation_date, waterYear=Number(date.slice(0,4))+(Number(date.slice(5,7))>=10?1:0), i=region.dates.indexOf(date.slice(5,10));
+  const status=regionalStatus(snapshot,region), date=status.date;
+  $('snapshot-status').textContent=`${status.stale?'NRCS report delayed':status.label} · Observed ${fmtDate(date)}${status.stale?' · '+status.age+' days old. Other regions update separately.':''}${healthNotice}`;
+  const waterYear=Number(date.slice(0,4))+(Number(date.slice(5,7))>=10?1:0), i=region.dates.indexOf(date.slice(5,10));
   const value=region.years[waterYear]?.[i]??null,median=region.median[i]??null,state=condition(value,median);
   $('condition-title').textContent=state.headline;$('condition-copy').textContent=state.text;
   $('swe').textContent=value===null?'—':fmt(value);$('median').textContent=median===null?'Not reported':fmt(median)+' inches';
@@ -55,7 +57,7 @@ function renderRegion(){
 }
 function syncURL(){const u=new URL(location.href);u.searchParams.set('region',region.id);u.searchParams.set('year',year);const selectedDate=calendarDate(year,region.dates[Number($('day').value)]);if(selectedDate)u.searchParams.set('date',selectedDate);else u.searchParams.delete('date');history.replaceState(null,'',u);}
 async function load(){
-  $('load-error').hidden=true;$('dashboard').hidden=true;$('snapshot-status').textContent='Loading the verified snowpack snapshot…';
+  healthNotice='';$('load-error').hidden=true;$('dashboard').hidden=true;$('snapshot-status').textContent='Loading the verified snowpack snapshot…';
   try{
     const response=await fetch(document.body.dataset.snapshot||'data/snapshot.json',{signal:AbortSignal.timeout(10000)});if(!response.ok)throw new Error('Snapshot unavailable');snapshot=validateSnapshot(await response.json());
     const params=new URLSearchParams(location.search);region=snapshot.regions.find(r=>r.id===params.get('region'))||snapshot.regions[0];
@@ -84,7 +86,7 @@ async function load(){
     if(document.body.dataset.health){
       // Health failure must never hide an already accepted data snapshot.
       try{const healthResponse=await fetch(document.body.dataset.health,{cache:'no-store',signal:AbortSignal.timeout(4000)});
-        if(healthResponse.ok){const health=await healthResponse.json();if(!['accepted','unchanged'].includes(health.status))$('snapshot-status').textContent+=' · The latest update could not be completed. Showing the last verified readings.';}
+        if(healthResponse.ok){const health=await healthResponse.json();if(!['accepted','unchanged'].includes(health.status)){healthNotice=' · The latest update could not be completed. Showing the last verified readings.';renderRegion();}}
       }catch{/* The age label remains reliable even when the health file cannot load. */}
     }
   }catch(error){$('snapshot-status').textContent='Snapshot unavailable · no measurements displayed';$('load-error').hidden=false;}

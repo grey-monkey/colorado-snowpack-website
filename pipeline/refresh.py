@@ -100,30 +100,24 @@ def candidate(payloads,today):
         observed=date.fromisoformat(proof['latest']['observation_date'])
         if observed!=reported[0]:
             raise Rejected('source_missing','latest_observation_missing')
-        if observed>today or (today-observed).days>2:
+        if observed>today:
             raise Rejected('source_missing','source_date_outside_freshness_window')
         for row in normalized:
             if row['observation_date']>observed.isoformat() and row['swe_inches'] is not None:
                 raise Rejected('validation_failed','future_observation')
         dates.append(observed)
         observations.extend(normalized);proofs.append(proof)
-    # NRCS publishes regions independently. Compare all regions on the newest
-    # common date instead of rejecting a valid batch when one report is ahead.
-    # Every product still passes chart/export verification and the freshness limit.
-    common_date=min(dates).isoformat()
-    endpoints={r['region_id']:r for r in observations
-        if r['observation_date']==common_date and r['swe_inches'] is not None}
-    if len(endpoints)!=len(PRODUCTS):
-        raise Rejected('source_missing','common_observation_missing')
-    for proof in proofs:
-        proof['source_latest']=proof['latest']
-        proof['latest']=endpoints[proof['region_id']]
-    # Do not store placeholder future dates as historical observations.
-    observations=[r for r in observations if r['observation_date']<=common_date]
+    # Verify each product independently, retaining only its actually reported days.
+    # A delayed region must not hold back fresh, verified readings elsewhere.
+    if (today-max(dates)).days>2:
+        raise Rejected('source_missing','source_date_outside_freshness_window')
+    region_dates={p['region_id']:p['latest']['observation_date'] for p in proofs}
+    observations=[r for r in observations
+        if r['observation_date']<=region_dates[r['region_id']]]
     observations.sort(key=lambda r:(r['region_id'],r['observation_date']))
-    return dict(observation_date=common_date,observations=observations,
+    return dict(observation_date=max(dates).isoformat(),observations=observations,
         metadata=dict(schema_version='0.1.0',method_version=VERSION,source_sha256=hashes,
-            products=proofs,status='accepted',reference_period='1991-2020',units='inches SWE',
+            products=proofs,common_observation_date=min(dates).isoformat(),status='accepted',reference_period='1991-2020',units='inches SWE',
             limitation='Published station-based series; daily coverage and weights not independently verified.'))
 
 
