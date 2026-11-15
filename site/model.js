@@ -19,6 +19,10 @@ export function freshness(snapshot, now=new Date()) {
   const age=Math.floor((Date.UTC(Number(parts.year),Number(parts.month)-1,Number(parts.day))-Date.parse(snapshot.observation_date+'T00:00:00Z'))/86400000);
   return {stale:age>2, age, label:snapshot.status==='frozen'?'Frozen snapshot · not updating':age>2?'Older data · update overdue':'Latest available snapshot'};
 }
+export function regionalStatus(snapshot, region, now=new Date()) {
+  const date=region.observation_date||snapshot.observation_date;
+  return {date,...freshness({...snapshot,observation_date:date},now)};
+}
 export function yearSeries(region, year) {
   return region.dates.map((md,i)=>({md,date:calendarDate(year,md),value:calendarDate(year,md)?region.years[year]?.[i]??null:null,median:region.median[i]}));
 }
@@ -32,6 +36,7 @@ export function validateSnapshot(s) {
   if(s.schema_version!=='1.0.0'||!['frozen','accepted'].includes(s.status)||!/^\d{4}-\d{2}-\d{2}$/.test(s.observation_date)||!Array.isArray(s.regions)||!s.regions.length) throw new Error('Unsupported snapshot');
   for(const r of s.regions) {
     if(!r.id||!r.name||r.dates?.length!==366||new Set(r.dates).size!==366||r.median?.length!==366||!Object.keys(r.years||{}).length) throw new Error('Incomplete region');
+    if(r.observation_date!==undefined && (!/^\d{4}-\d{2}-\d{2}$/.test(r.observation_date)||r.observation_date>s.observation_date||!Number.isFinite(Date.parse(r.observation_date)))) throw new Error('Invalid regional date');
     for(const values of [r.median,...Object.values(r.years)]) {
       if(values.length!==366||values.some(v=>v!==null&&(typeof v!=='number'||!Number.isFinite(v)||v<0))) throw new Error('Invalid observations');
     }

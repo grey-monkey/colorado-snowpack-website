@@ -28,3 +28,10 @@ test('geometry keeps all official basin identifiers with exactly eight linked se
  assert(geometry.basins.every(b=>b.path.startsWith('M')&&b.path.endsWith('Z')));
  assert(!JSON.stringify(geometry).includes('NaN'));
 });
+
+test('map never carries an older regional reading into the selected date',()=>{
+ const region={observation_date:'2026-11-12',dates:['11-12','11-15'],years:{2027:[1.24,null]},median:[1.68,2.02]};
+ assert.equal(reading(region,2027,0).value,1.24);
+ assert.equal(reading(region,2027,1).value,null);
+ assert.equal(displayReading(reading(region,2027,1),'median'),'—');
+});
